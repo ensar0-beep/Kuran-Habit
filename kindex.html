@@ -32,8 +32,16 @@ input,textarea,select{font-size:16px}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 
 .quick-btns{display:flex;gap:8px;margin-bottom:12px}
-.quick-btns button{flex:1;padding:10px 4px;background:var(--sur2);border:1.5px solid var(--bor);border-radius:9px;font-size:15px;font-weight:700;color:var(--mut);cursor:pointer;transition:all .12s}
+.quick-btns button{flex:1;width:100%;display:block;padding:10px 4px;background:var(--sur2);border:1.5px solid var(--bor);border-radius:9px;font-size:15px;font-weight:700;color:var(--mut);cursor:pointer;transition:all .12s}
 .quick-btns button.active{border-color:var(--thumb-color,var(--grn));color:var(--thumb-color,var(--grn));background:var(--grn-dim)}
+.qbtn-wrap{flex:1;position:relative;padding-top:9px}
+.target-dot{position:absolute;top:0;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .15s}
+.qbtn-wrap.is-target .target-dot{opacity:1}
+.qbtn-wrap.is-target button:not(.active){border-color:rgba(245,200,66,.45)}
+.step-btn{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:transparent;border:1px solid var(--bor);color:var(--mut2);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;transition:all .15s}
+.step-btn:active{background:var(--sur2);color:var(--mut)}
+.num-center{text-align:center}
+.num-unit{font-size:12px;color:var(--mut);margin-top:2px}
 
 /* ZİNCİR */
 .chain-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:18px 16px 14px;margin-bottom:14px}
@@ -142,7 +150,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .popt.sel .popt-label{color:var(--grn)}
 .popt.zero.sel{background:var(--red-dim);border-color:var(--red)}
 .popt.zero.sel .popt-label{color:var(--red)}
-.page-input{font-size:42px;font-weight:700;transition:color .2s;background:transparent;border:none;outline:none;color:var(--txt);font-family:inherit;width:110px;padding:0;-moz-appearance:textfield}
+.page-input{font-size:42px;font-weight:700;text-align:center;transition:color .2s;background:transparent;border:none;outline:none;color:var(--txt);font-family:inherit;width:110px;padding:0;-moz-appearance:textfield}
 .page-input::-webkit-outer-spin-button,.page-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .page-input::placeholder{color:var(--mut2)}
 .save-btn{width:100%;padding:15px;background:var(--grn);color:#000;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s}
@@ -156,6 +164,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* SLIDER */
 .slider-wrap{padding:8px 4px 20px;margin-bottom:4px}
 .slider-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+/* Bugün kartı: sayı ortalı, +/- ile çevrili (takvim düzenleme modalının slider-top'una dokunmuyor) */
+#slider-wrap .slider-top{justify-content:center;gap:18px}
 .slider-val{font-size:42px;font-weight:700;transition:color .2s}
 .slider-lbl{font-size:13px;color:var(--mut);text-align:right}
 .slider-lbl span{display:block;font-size:11px;margin-top:2px}
@@ -493,15 +503,19 @@ input[type=range].pgslider::-moz-range-thumb{
       <div class="target-line" id="target-line"></div>
       <div class="slider-wrap" id="slider-wrap">
         <div class="slider-top">
-          <input type="number" class="page-input" id="page-input" inputmode="numeric" min="0" max="604" placeholder="0" oninput="onPageInput(this.value)">
-          <div class="slider-lbl"><span id="slider-lbl-text">Sayfa gir</span><span id="slider-sub"></span></div>
+          <button class="step-btn" onclick="stepPage(-1)" aria-label="Azalt">−</button>
+          <div class="num-center">
+            <input type="number" class="page-input" id="page-input" inputmode="numeric" min="0" max="604" placeholder="0" oninput="onPageInput(this.value)">
+            <div class="num-unit">sayfa</div>
+          </div>
+          <button class="step-btn" onclick="stepPage(1)" aria-label="Artır">+</button>
         </div>
         <div class="quick-btns" id="quick-btns">
-          <button onclick="quickSet(1)">1</button>
-          <button onclick="quickSet(3)">3</button>
-          <button onclick="quickSet(5)">5</button>
-          <button onclick="quickSet(10)">10</button>
-          <button onclick="quickSet(20)">20</button>
+          <div class="qbtn-wrap" data-v="1"><span class="target-dot"></span><button onclick="quickSet(1)">1</button></div>
+          <div class="qbtn-wrap" data-v="3"><span class="target-dot"></span><button onclick="quickSet(3)">3</button></div>
+          <div class="qbtn-wrap" data-v="5"><span class="target-dot"></span><button onclick="quickSet(5)">5</button></div>
+          <div class="qbtn-wrap" data-v="10"><span class="target-dot"></span><button onclick="quickSet(10)">10</button></div>
+          <div class="qbtn-wrap" data-v="20"><span class="target-dot"></span><button onclick="quickSet(20)">20</button></div>
         </div>
         <button class="no-read-btn" id="no-read-btn" onclick="selectNoRead()">✕ &nbsp;Bugün okumadım</button>
       </div>
@@ -1491,6 +1505,23 @@ function quickSet(val){
   onPageInput(val);
 }
 
+function stepPage(delta){
+  const input=document.getElementById('page-input');
+  const cur=parseInt(input.value);
+  const next=Math.max(0,Math.min(604,(isNaN(cur)?0:cur)+delta));
+  input.value=next;
+  onPageInput(next);
+}
+
+/* Bugünkü seviyenin hedef sayfa sayısını hızlı-seçim butonlarının üstünde nazikçe işaretler */
+function updateTargetMarker(){
+  if(!S) return;
+  const target=LEVELS[S.levelIndex].pages;
+  document.querySelectorAll('#quick-btns .qbtn-wrap').forEach(w=>{
+    w.classList.toggle('is-target', parseInt(w.dataset.v)===target);
+  });
+}
+
 function updateQuickBtns(val){
   const stage=getStage(val);
   const color=stageColorsTable()[stage].color;
@@ -1507,8 +1538,6 @@ function onPageInput(raw){
     sel=null;
     input.style.color='';
     document.getElementById('no-read-btn').classList.remove('sel');
-    document.getElementById('slider-lbl-text').textContent='Sayfa gir';
-    document.getElementById('slider-sub').textContent='';
     document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
     document.getElementById('save-btn').disabled=true;
     return;
@@ -1520,8 +1549,6 @@ function onPageInput(raw){
   if(val===0){
     document.getElementById('no-read-btn').classList.add('sel');
     input.style.color='var(--red)';
-    document.getElementById('slider-lbl-text').textContent='Okumadım';
-    document.getElementById('slider-sub').textContent='';
     document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
     document.getElementById('save-btn').disabled=false;
     return;
@@ -1529,11 +1556,9 @@ function onPageInput(raw){
 
   document.getElementById('no-read-btn').classList.remove('sel');
   const stage=getStage(val);
-  const {color,label}=stageColorsTable()[stage];
+  const {color}=stageColorsTable()[stage];
 
   input.style.color=color;
-  document.getElementById('slider-lbl-text').textContent=label;
-  document.getElementById('slider-sub').textContent=val+' sayfa';
 
   updateQuickBtns(val);
   document.getElementById('save-btn').disabled=false;
@@ -1712,6 +1737,7 @@ function renderMe(){
   const lvl=LEVELS[S.levelIndex];
   document.getElementById('s-total').textContent=S.totalDays;
   document.getElementById('s-streak').textContent=getReadStreak();
+  updateTargetMarker();
 
   const btn=document.getElementById('save-btn');
   const tc=document.getElementById('tc-title');
