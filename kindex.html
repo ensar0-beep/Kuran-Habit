@@ -108,6 +108,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .popt.sel .popt-label{color:var(--grn)}
 .popt.zero.sel{background:var(--red-dim);border-color:var(--red)}
 .popt.zero.sel .popt-label{color:var(--red)}
+.page-input{font-size:42px;font-weight:700;transition:color .2s;background:transparent;border:none;outline:none;color:var(--txt);font-family:inherit;width:110px;padding:0;-moz-appearance:textfield}
+.page-input::-webkit-outer-spin-button,.page-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.page-input::placeholder{color:var(--mut2)}
 .save-btn{width:100%;padding:15px;background:var(--grn);color:#000;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s}
 .save-btn:disabled{opacity:.3;cursor:not-allowed}
 .save-btn.done{background:var(--sur2);color:var(--mut);border:1px solid var(--bor)}
@@ -145,37 +148,6 @@ input[type=range].pgslider::-moz-range-thumb{
 .milestones{position:relative;height:28px;margin-top:8px;padding:0 2px}
 .ms-item{text-align:center;font-size:10px;font-weight:600;color:var(--mut);transition:color .2s;cursor:pointer;padding:4px 6px;border-radius:6px}
 
-/* Kuran'da Yerim slider'ı: sabit renkli ok ucu (yukarı işaret eden üçgen) */
-input[type=range].loc-pgslider{
-  background:var(--sur2) !important;
-}
-input[type=range].loc-pgslider::-webkit-slider-thumb{
-  -webkit-appearance:none;appearance:none;
-  width:0;height:0;
-  border-left:11px solid transparent;
-  border-right:11px solid transparent;
-  border-bottom:16px solid var(--grn);
-  background:none;
-  border-radius:0;
-  box-shadow:none;
-  cursor:pointer;
-  transition:transform .1s;
-  margin-top:-6px;
-}
-input[type=range].loc-pgslider:active::-webkit-slider-thumb{transform:scale(1.15)}
-input[type=range].loc-pgslider::-moz-range-thumb{
-  width:0;height:0;
-  border-left:11px solid transparent;
-  border-right:11px solid transparent;
-  border-bottom:16px solid var(--grn);
-  background:none;
-  border:none;
-  border-bottom:16px solid var(--grn);
-  border-left:11px solid transparent;
-  border-right:11px solid transparent;
-  border-radius:0;
-  cursor:pointer;
-}
 .ms-item.active{color:var(--thumb-color,#3DDC84)}
 .ms-item.reached{color:var(--mut)}
 .no-read-btn{width:100%;padding:11px;margin-bottom:10px;background:transparent;border:1.5px solid var(--bor);border-radius:var(--rs);font-size:13px;color:var(--mut);cursor:pointer;transition:all .15s}
@@ -189,7 +161,6 @@ input[type=range].loc-pgslider::-moz-range-thumb{
 .loc-card{background:linear-gradient(135deg,var(--sur) 0%,#1A2332 100%);border:1px solid var(--bor);border-radius:var(--r);padding:18px;margin-bottom:14px}
 .loc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .loc-title{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
-.loc-total{font-size:11px;color:var(--mut)}
 .loc-display{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
 .loc-big{display:flex;align-items:baseline;gap:4px}
 .loc-pagenum{font-size:40px;font-weight:700;color:var(--grn);line-height:1}
@@ -199,9 +170,6 @@ input[type=range].loc-pgslider::-moz-range-thumb{
 .loc-cuz{display:block;font-size:11px;color:var(--gold);margin-top:2px}
 .loc-progress-bg{height:6px;background:var(--sur2);border-radius:3px;overflow:hidden;margin-bottom:14px}
 .loc-progress-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--grn),var(--gold));transition:width .5s;width:0}
-
-.loc-slider-wrap{padding:2px 2px 12px}
-.loc-pgslider{width:100%}
 
 .loc-btn-row{display:flex;gap:8px}
 .loc-input{flex:1;min-width:0;background:var(--sur2);border:1px solid var(--bor);border-radius:9px;padding:12px 13px;color:var(--txt);font-size:16px;font-family:inherit;outline:none;transition:border-color .15s}
@@ -497,8 +465,8 @@ input[type=range].loc-pgslider::-moz-range-thumb{
       <div class="target-line" id="target-line"></div>
       <div class="slider-wrap" id="slider-wrap">
         <div class="slider-top">
-          <div class="slider-val" id="slider-val" style="color:#3DDC84">—</div>
-          <div class="slider-lbl"><span id="slider-lbl-text">Kaydır</span><span id="slider-sub"></span></div>
+          <input type="number" class="page-input" id="page-input" inputmode="numeric" min="0" max="604" placeholder="0" oninput="onPageInput(this.value)">
+          <div class="slider-lbl"><span id="slider-lbl-text">Sayfa gir</span><span id="slider-sub"></span></div>
         </div>
         <div class="quick-btns" id="quick-btns">
           <button onclick="quickSet(1)">1</button>
@@ -508,12 +476,8 @@ input[type=range].loc-pgslider::-moz-range-thumb{
           <button onclick="quickSet(20)">20</button>
         </div>
         <button class="no-read-btn" id="no-read-btn" onclick="selectNoRead()">✕ &nbsp;Bugün okumadım</button>
-        <div class="range-track">
-          <input type="range" class="pgslider" id="pgslider" min="0" max="20" value="0" oninput="onSlider(this.value)">
-        </div>
-
       </div>
-      <button class="save-btn" id="save-btn" disabled onclick="logToday()">Kaydet</button>
+      <button class="save-btn" id="save-btn" disabled onclick="logToday()">Okudum</button>
       <button class="edit-btn" id="edit-today-btn" onclick="editToday()" style="display:none">Bugünü düzenle</button>
       <div class="msg msg-ok" id="msg-ok"></div>
       <div class="msg msg-warn" id="msg-warn"></div>
@@ -523,7 +487,6 @@ input[type=range].loc-pgslider::-moz-range-thumb{
     <div class="loc-card">
       <div class="loc-top">
         <div class="loc-title">Kuran'da Yerim</div>
-        <div class="loc-total" id="loc-total"></div>
       </div>
       <div class="loc-display loc-display-clickable" id="loc-display" onclick="openAyetModal()">
         <div class="loc-big">
@@ -538,10 +501,6 @@ input[type=range].loc-pgslider::-moz-range-thumb{
       <div class="loc-tap-hint" id="loc-tap-hint">Ayeti ve mealini görmek için dokun</div>
       <div class="loc-progress-bg"><div class="loc-progress-fill" id="loc-progress"></div></div>
 
-      <div class="loc-slider-wrap">
-        <input type="range" class="pgslider loc-pgslider" id="loc-pgslider" min="1" max="604" value="1" oninput="onLocSlider(this.value)">
-      </div>
-
       <div class="loc-btn-row">
         <input class="loc-input" id="loc-manual-input" type="number" inputmode="numeric" min="1" max="604" placeholder="Sayfa gir" onkeydown="if(event.key==='Enter')saveLocPage()">
         <button class="loc-save-btn loc-save-btn-main" onclick="saveLocPage()">Bu sayfadayım</button>
@@ -552,7 +511,7 @@ input[type=range].loc-pgslider::-moz-range-thumb{
     <div class="stats-row">
       <div class="sbox"><div class="snum" id="s-totalpages">0</div><div class="slbl">Okunan Sayfa</div></div>
       <div class="sbox"><div class="snum" id="s-total">0</div><div class="slbl">Toplam gün</div></div>
-      <div class="sbox"><div class="snum" id="s-pages">1</div><div class="slbl">Sayfa/gün</div></div>
+      <div class="sbox"><div class="snum" id="s-streak">0</div><div class="slbl">Kesintisiz Gün</div></div>
     </div>
 
     <div class="arabic-footer">
@@ -1074,9 +1033,9 @@ function showApp(){
   document.getElementById('hdr-avatar').textContent=S.name.slice(0,1).toUpperCase();
   document.getElementById('hdr-hijri').textContent='🌙 '+hijriDate();
   const todayEntry=S.history.find(h=>h.date===todayStr());
-  const initVal=todayEntry?todayEntry.pages:0;
-  document.getElementById('pgslider').value=initVal;
-  onSlider(initVal);
+  const input=document.getElementById('page-input');
+  if(todayEntry){ input.value=todayEntry.pages; onPageInput(todayEntry.pages); }
+  else { input.value=''; onPageInput(''); }
   renderMe();
 }
 
@@ -1367,14 +1326,14 @@ function getStage(val){
 }
 
 function selectNoRead(){
-  document.getElementById('pgslider').value=0;
-  onSlider(0);
+  document.getElementById('page-input').value=0;
+  onPageInput(0);
 }
 
 function quickSet(val){
   document.getElementById('no-read-btn').classList.remove('sel');
-  document.getElementById('pgslider').value=val;
-  onSlider(val);
+  document.getElementById('page-input').value=val;
+  onPageInput(val);
 }
 
 function updateQuickBtns(val){
@@ -1387,20 +1346,27 @@ function updateQuickBtns(val){
   });
 }
 
-function onSlider(val){
-  val=parseInt(val);
+function onPageInput(raw){
+  const input=document.getElementById('page-input');
+  if(raw===''||raw===null||isNaN(parseInt(raw))){
+    sel=null;
+    input.style.color='';
+    document.getElementById('no-read-btn').classList.remove('sel');
+    document.getElementById('slider-lbl-text').textContent='Sayfa gir';
+    document.getElementById('slider-sub').textContent='';
+    document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
+    document.getElementById('save-btn').disabled=true;
+    return;
+  }
+
+  const val=Math.max(0,Math.min(604,parseInt(raw)));
   sel=val;
-  const slider=document.getElementById('pgslider');
 
   if(val===0){
     document.getElementById('no-read-btn').classList.add('sel');
-    document.getElementById('slider-val').textContent='0';
-    document.getElementById('slider-val').style.color='var(--red)';
+    input.style.color='var(--red)';
     document.getElementById('slider-lbl-text').textContent='Okumadım';
     document.getElementById('slider-sub').textContent='';
-    slider.style.setProperty('--thumb-color','var(--red)');
-    slider.style.background=`var(--sur2)`;
-    document.documentElement.style.setProperty('--thumb-color','var(--red)');
     document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
     document.getElementById('save-btn').disabled=false;
     return;
@@ -1410,17 +1376,9 @@ function onSlider(val){
   const stage=getStage(val);
   const {color,label}=STAGE_COLORS[stage];
 
-  // fill track gradient
-  const pct=(val/20)*100;
-  slider.style.setProperty('--thumb-color',color);
-  slider.style.background=`linear-gradient(to right, ${color} ${pct}%, var(--sur2) ${pct}%)`;
-  document.documentElement.style.setProperty('--thumb-color',color);
-
-  // value display
-  document.getElementById('slider-val').textContent=val;
-  document.getElementById('slider-val').style.color=color;
+  input.style.color=color;
   document.getElementById('slider-lbl-text').textContent=label;
-  document.getElementById('slider-sub').textContent=val===20?'':val+' sayfa';
+  document.getElementById('slider-sub').textContent=val+' sayfa';
 
   updateQuickBtns(val);
   document.getElementById('save-btn').disabled=false;
@@ -1432,13 +1390,14 @@ function editToday(){
   editingToday=true;
   const entry=S.history.find(h=>h.date===todayStr());
   renderMe();
+  const input=document.getElementById('page-input');
   if(entry && entry.pages===0){
     selectNoRead();
   } else if(entry){
-    document.getElementById('pgslider').value=entry.pages;
-    onSlider(entry.pages);
+    input.value=entry.pages;
+    onPageInput(entry.pages);
   } else {
-    onSlider(document.getElementById('pgslider').value);
+    onPageInput(input.value);
   }
 }
 
@@ -1540,22 +1499,9 @@ function showMsg(type,txt){
 /* ══════════════════════════════
    KONUM (sayfa / sure / cüz)
 ══════════════════════════════ */
-/* ══════════════════════════════
-   KONUM (sayfa / sure / cüz) — slider tabanlı
-══════════════════════════════ */
-function onLocSlider(val){
-  val=parseInt(val);
-  document.getElementById('loc-pagenum').textContent=val;
-  document.getElementById('loc-progress').style.width=Math.round(val/604*100)+'%';
-  document.getElementById('loc-sure').textContent=getSure(val)+' suresi';
-  document.getElementById('loc-cuz').textContent=Math.min(30,Math.ceil(val/20.13))+'. cüz';
-  document.getElementById('loc-manual-input').value='';
-}
-
 function saveLocPage(){
   const inp=document.getElementById('loc-manual-input');
-  const manualVal=parseInt(inp.value)||0;
-  const p = (manualVal>=1 && manualVal<=604) ? manualVal : parseInt(document.getElementById('loc-pgslider').value);
+  const p=parseInt(inp.value)||0;
   if(p<1||p>604) return;
   S.currentPage=p;
   saveLocal();
@@ -1568,9 +1514,7 @@ function saveLocPage(){
 function renderLoc(){
   const p=S.currentPage;
   const hint=document.getElementById('loc-tap-hint');
-  const slider=document.getElementById('loc-pgslider');
   if(p){
-    slider.value=p;
     document.getElementById('loc-pagenum').textContent=p;
     document.getElementById('loc-sure').textContent=getSure(p)+' suresi'; // ilk anlık gösterim
     document.getElementById('loc-cuz').textContent=Math.min(30,Math.ceil(p/20.13))+'. cüz'; // ilk anlık tahmin
@@ -1578,16 +1522,32 @@ function renderLoc(){
     document.getElementById('loc-progress').style.width=Math.round(p/604*100)+'%';
     hint.style.display='';
   } else {
-    slider.value=1;
     document.getElementById('loc-pagenum').textContent='—';
-    document.getElementById('loc-sure').textContent='Kaydırarak veya "Sayfa gir" ile başla';
+    document.getElementById('loc-sure').textContent='"Sayfa gir" ile başla';
     document.getElementById('loc-cuz').textContent='';
     document.getElementById('loc-progress').style.width='0%';
     hint.style.display='none';
   }
   const total=S.history.reduce((acc,h)=>acc+(h.pages||0),0);
-  document.getElementById('loc-total').textContent='Toplam okunan: '+total+' sayfa';
   document.getElementById('s-totalpages').textContent=total;
+}
+
+/* Bugüne kadar (ya da bugün henüz girilmediyse düne kadar) kesintisiz
+   en az 1 sayfa okunan gün sayısı — seviye hedefinden bağımsız, sadece
+   0 sayfa (ya da hiç kayıt yok) zinciri bozar. */
+function getReadStreak(){
+  const map={}; S.history.forEach(h=>map[h.date]=h);
+  const today=todayStr();
+  let d=new Date(today+'T00:00:00');
+  if(map[today]===undefined) d.setDate(d.getDate()-1);
+  let count=0;
+  while(true){
+    const e=map[localDS(d)];
+    if(!e || !(e.pages>0)) break;
+    count++;
+    d.setDate(d.getDate()-1);
+  }
+  return count;
 }
 
 /* ══════════════════════════════
@@ -1596,7 +1556,7 @@ function renderLoc(){
 function renderMe(){
   const lvl=LEVELS[S.levelIndex];
   document.getElementById('s-total').textContent=S.totalDays;
-  document.getElementById('s-pages').textContent=lvl.pages;
+  document.getElementById('s-streak').textContent=getReadStreak();
 
   const btn=document.getElementById('save-btn');
   const tc=document.getElementById('tc-title');
@@ -1614,7 +1574,7 @@ function renderMe(){
     document.getElementById('no-read-btn').style.display='none';
     editBtn.style.display='';
   } else {
-    btn.textContent=editingToday?'Güncelle':'Kaydet';
+    btn.textContent=editingToday?'Güncelle':'Okudum';
     btn.disabled=(sel===null);btn.className='save-btn';
     tc.textContent=editingToday?'Bugünü düzenle':'Bugün kaç sayfa okudun?';
     // Bugünkü hedef + altında kalırsa ne olur
