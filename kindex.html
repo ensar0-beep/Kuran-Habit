@@ -94,8 +94,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--bor);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 2px;background:none;border:none;border-radius:12px;color:var(--mut);cursor:pointer;font-family:inherit;transition:color .15s}
 .bn-item.on{color:var(--grn)}
+.bn-icon{width:22px;height:22px;flex-shrink:0}
+.bn-icon svg{width:100%;height:100%;display:block}
 .bn-label{font-size:11px;font-weight:600}
-.bn-avatar{width:20px;height:20px;font-size:9px}
+.bn-avatar{width:22px;height:22px;font-size:9px}
 
 /* PROFİL MENÜSÜ */
 .profile-menu-head{display:flex;align-items:center;gap:12px;padding:2px 4px 16px}
@@ -624,12 +626,15 @@ input[type=range].pgslider::-moz-range-thumb{
   <!-- ALT NAVİGASYON -->
   <nav class="bottom-nav">
     <button class="bn-item on" id="bn-me" onclick="switchTab('me')">
+      <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></span>
       <span class="bn-label">Bugün</span>
     </button>
     <button class="bn-item" id="bn-yol" onclick="switchTab('yol')">
+      <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/></svg></span>
       <span class="bn-label">Yolculuk</span>
     </button>
     <button class="bn-item" id="bn-grup" onclick="switchTab('grup')">
+      <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M15.3 14.3c2.5.5 4.2 2.6 4.2 5.2"/></svg></span>
       <span class="bn-label">Grup</span>
     </button>
     <button class="bn-item" id="bn-profil" onclick="openProfileMenu()" aria-label="Profil menüsü">
