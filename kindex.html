@@ -84,7 +84,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .hdr-date{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--grn)}
 .hdr-hijri{font-size:11px;color:var(--gold);margin-top:3px;font-weight:500}
 .hdr-name{font-size:16px;font-weight:700;color:var(--txt)}
-.user-chip{display:flex;align-items:center;gap:9px;background:var(--sur);border:1px solid var(--bor);border-radius:100px;padding:5px 6px 5px 14px;cursor:pointer;font-family:inherit;transition:all .15s}
+.user-chip{display:flex;align-items:center;gap:9px;background:var(--sur);border:1px solid var(--bor);border-radius:100px;padding:4px;cursor:pointer;font-family:inherit;transition:all .15s}
 .user-chip:active{background:var(--sur2);transform:scale(0.97)}
 .user-chip-name{font-size:13px;font-weight:600;color:var(--txt);letter-spacing:.01em}
 .user-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#06130C}
@@ -478,7 +478,6 @@ input[type=range].pgslider::-moz-range-thumb{
       </div>
       <div class="hdr-right">
         <button class="user-chip" onclick="openProfileMenu()" aria-label="Profil menüsü">
-          <span class="user-chip-name" id="hdr-name"></span>
           <span class="user-avatar" id="hdr-avatar"></span>
         </button>
       </div>
@@ -554,7 +553,7 @@ input[type=range].pgslider::-moz-range-thumb{
 
     <!-- Zincir görünümü -->
     <div class="chain-card">
-      <div class="chain-card-title">İlerleme Zinciri</div>
+      <div class="chain-card-title">Yolculuk Zinciri</div>
       <div class="chain-lbl-row"><span>1'ler</span><span>Hatim</span></div>
       <div class="chain-track" id="chain-track"></div>
       <div class="chain-labels" id="chain-labels"></div>
@@ -641,7 +640,7 @@ input[type=range].pgslider::-moz-range-thumb{
     </button>
     <button class="bn-item" id="bn-yol" onclick="switchTab('yol')">
       <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/></svg></span>
-      <span class="bn-label">İlerlemem</span>
+      <span class="bn-label">Yolculuk</span>
     </button>
     <button class="bn-item" id="bn-grup" onclick="switchTab('grup')">
       <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M15.3 14.3c2.5.5 4.2 2.6 4.2 5.2"/></svg></span>
@@ -1172,7 +1171,6 @@ function hijriDate(){
 
 function showApp(){
   document.getElementById('hdr-date').textContent=dateLabel();
-  document.getElementById('hdr-name').textContent=S.name;
   document.getElementById('hdr-avatar').textContent=S.name.slice(0,1).toUpperCase();
   document.getElementById('hdr-avatar').className='user-avatar av-'+(S.avatarId||'1');
   document.getElementById('hdr-hijri').textContent='🌙 '+hijriDate();
