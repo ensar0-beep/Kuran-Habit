@@ -15,14 +15,21 @@
   --bg:#161B22; --sur:#1E2530; --sur2:#252D3A; --bor:#2D3748;
   --grn:#3DDC84; --grn-dim:#1A3A2A; --grn-txt:#3DDC84;
   --txt:#FFFFFF; --mut:#8892A4; --mut2:#5A6478;
-  --gold:#F5C842; --red:#FF5C5C; --red-dim:#3A1A1A;
+  --gold:#F5C842; --gold-dim:#2A2010; --red:#FF5C5C; --red-dim:#3A1A1A;
   --r:14px; --rs:10px;
+}
+/* AÇIK MOD — aynı token adları, tersine çevrilmiş palet */
+:root[data-theme="light"] {
+  --bg:#F6F8F6; --sur:#FFFFFF; --sur2:#EEF2EF; --bor:#DCE3DE;
+  --grn:#16A34A; --grn-dim:#E3F6EA; --grn-txt:#16A34A;
+  --txt:#151A17; --mut:#5B655F; --mut2:#8B958E;
+  --gold:#B45309; --gold-dim:#FCF1DC; --red:#DC2626; --red-dim:#FCEAEA;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;touch-action:pan-y;overscroll-behavior-y:contain}
 body{touch-action:pan-y}
 input,textarea,select{font-size:16px}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:max(env(safe-area-inset-bottom),24px)}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 
 .quick-btns{display:flex;gap:8px;margin-bottom:12px}
 .quick-btns button{flex:1;padding:10px 4px;background:var(--sur2);border:1.5px solid var(--bor);border-radius:9px;font-size:15px;font-weight:700;color:var(--mut);cursor:pointer;transition:all .12s}
@@ -83,10 +90,25 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--grn),#1A8A5A);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#06130C}
 .btn-sm{background:none;border:1px solid var(--bor);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--mut);cursor:pointer}
 
-/* TABS */
-.tabs{background:var(--bg);border-bottom:1px solid var(--bor);display:flex;padding:0 18px}
-.tb{flex:1;padding:12px 8px;background:none;border:none;font-size:13px;font-weight:500;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tb.on{color:var(--grn);border-bottom-color:var(--grn)}
+/* ALT NAVİGASYON */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--bor);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 2px;background:none;border:none;border-radius:12px;color:var(--mut);cursor:pointer;font-family:inherit;transition:color .15s}
+.bn-item.on{color:var(--grn)}
+.bn-label{font-size:11px;font-weight:600}
+.bn-avatar{width:20px;height:20px;font-size:9px}
+
+/* PROFİL MENÜSÜ */
+.profile-menu-head{display:flex;align-items:center;gap:12px;padding:2px 4px 16px}
+.profile-menu-avatar{width:38px;height:38px;font-size:14px}
+.profile-menu-name{font-size:15px;font-weight:700;color:var(--txt)}
+.profile-menu-sub{font-size:11px;color:var(--mut);margin-top:2px}
+.profile-menu-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 4px;background:none;border:none;border-top:1px solid var(--bor);font-size:14px;font-weight:600;color:var(--txt);cursor:pointer;text-align:left;font-family:inherit}
+.profile-menu-item.disabled{color:var(--mut2);cursor:default}
+.profile-menu-item.danger{color:var(--red);margin-top:6px}
+.pm-badge{font-size:10px;font-weight:700;color:var(--mut2);background:var(--sur2);border-radius:100px;padding:2px 8px}
+.pm-theme-switch{display:flex;background:var(--sur2);border-radius:100px;padding:3px;gap:2px}
+.pm-theme-btn{padding:6px 12px;background:none;border:none;border-radius:100px;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer;font-family:inherit}
+.pm-theme-btn.on{background:var(--grn);color:#06130C}
 
 .pane{display:none;padding:16px 18px;max-width:520px;margin:0 auto}
 .pane.on{display:block}
@@ -117,7 +139,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .msg{margin-top:11px;padding:11px 14px;border-radius:var(--rs);font-size:13px;line-height:1.5;display:none}
 .msg.on{display:block}
 .msg-ok{background:var(--grn-dim);color:var(--grn)}
-.msg-warn{background:#2A2010;color:#F5C842}
+.msg-warn{background:var(--gold-dim);color:var(--gold)}
 
 /* SLIDER */
 .slider-wrap{padding:8px 4px 20px;margin-bottom:4px}
@@ -339,7 +361,7 @@ input[type=range].pgslider::-moz-range-thumb{
 .mn{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mtag{font-size:9px;padding:2px 7px;border-radius:100px;font-weight:600;flex-shrink:0}
 .me-tag{background:var(--grn-dim);color:var(--grn)}
-.gld-tag{background:#2A2010;color:var(--gold)}
+.gld-tag{background:var(--gold-dim);color:var(--gold)}
 .ms{font-size:11px;color:var(--mut);margin-bottom:5px}
 .mbb{height:4px;background:var(--sur2);border-radius:2px;overflow:hidden}
 .mbf{height:4px;border-radius:2px;background:var(--grn);transition:width .5s}
@@ -443,17 +465,12 @@ input[type=range].pgslider::-moz-range-thumb{
         <div class="hdr-hijri" id="hdr-hijri"></div>
       </div>
       <div class="hdr-right">
-        <button class="user-chip" onclick="confirmLogout()" aria-label="Çıkış yap">
+        <button class="user-chip" onclick="openProfileMenu()" aria-label="Profil menüsü">
           <span class="user-chip-name" id="hdr-name"></span>
           <span class="user-avatar" id="hdr-avatar"></span>
         </button>
       </div>
     </header>
-    <div class="tabs">
-      <button class="tb on" id="tb-me" onclick="switchTab('me')">Bugün</button>
-      <button class="tb" id="tb-yol" onclick="switchTab('yol')">Yolculuk</button>
-      <button class="tb" id="tb-grup" onclick="switchTab('grup')">Grup</button>
-    </div>
   </div>
 
   <!-- BUGÜN -->
@@ -603,6 +620,23 @@ input[type=range].pgslider::-moz-range-thumb{
       <button class="grup-leave-btn" onclick="leaveGroup()">Gruptan Ayrıl</button>
     </div>
   </div>
+
+  <!-- ALT NAVİGASYON -->
+  <nav class="bottom-nav">
+    <button class="bn-item on" id="bn-me" onclick="switchTab('me')">
+      <span class="bn-label">Bugün</span>
+    </button>
+    <button class="bn-item" id="bn-yol" onclick="switchTab('yol')">
+      <span class="bn-label">Yolculuk</span>
+    </button>
+    <button class="bn-item" id="bn-grup" onclick="switchTab('grup')">
+      <span class="bn-label">Grup</span>
+    </button>
+    <button class="bn-item" id="bn-profil" onclick="openProfileMenu()" aria-label="Profil menüsü">
+      <span class="user-avatar bn-avatar" id="bn-avatar"></span>
+      <span class="bn-label">Profil</span>
+    </button>
+  </nav>
 </div>
 
 <!-- TAKVİM MODAL -->
@@ -622,6 +656,38 @@ input[type=range].pgslider::-moz-range-thumb{
       <span><span class="leg-dot" style="background:var(--red)"></span>Okumadı</span>
     </div>
     <button class="btn-cancel" style="width:100%;margin-top:14px" onclick="closeCalendarModal()">Kapat</button>
+  </div>
+</div>
+
+<!-- PROFİL / AYARLAR MENÜSÜ -->
+<div class="modal-bg" id="profile-modal">
+  <div class="modal">
+    <div class="profile-menu-head">
+      <span class="user-avatar profile-menu-avatar" id="pm-avatar"></span>
+      <div>
+        <div class="profile-menu-name" id="pm-name"></div>
+        <div class="profile-menu-sub">Kullanıcı</div>
+      </div>
+    </div>
+
+    <button class="profile-menu-item" onclick="closeProfileMenu();switchTab('grup')">
+      <span>Grup</span>
+    </button>
+    <button class="profile-menu-item disabled" disabled>
+      <span>Bildirimler</span><span class="pm-badge">Yakında</span>
+    </button>
+    <div class="profile-menu-item">
+      <span>Görünüm</span>
+      <div class="pm-theme-switch">
+        <button class="pm-theme-btn" id="theme-btn-dark" onclick="setTheme('dark')">Koyu</button>
+        <button class="pm-theme-btn" id="theme-btn-light" onclick="setTheme('light')">Açık</button>
+      </div>
+    </div>
+    <button class="profile-menu-item danger" onclick="closeProfileMenu();confirmLogout()">
+      <span>Çıkış Yap</span>
+    </button>
+
+    <button class="btn-cancel" style="width:100%;margin-top:14px" onclick="closeProfileMenu()">Kapat</button>
   </div>
 </div>
 
@@ -981,6 +1047,43 @@ function confirmLogout(){
   }
 }
 
+/* ══════════════════════════════
+   PROFİL / AYARLAR MENÜSÜ
+══════════════════════════════ */
+function openProfileMenu(){
+  document.getElementById('pm-name').textContent=S.name;
+  document.getElementById('pm-avatar').textContent=S.name.slice(0,1).toUpperCase();
+  syncThemeButtons();
+  document.getElementById('profile-modal').classList.add('on');
+}
+function closeProfileMenu(){
+  document.getElementById('profile-modal').classList.remove('on');
+}
+
+/* ══════════════════════════════
+   TEMA (koyu / açık)
+══════════════════════════════ */
+const THEME_KEY='kuran_theme';
+function currentTheme(){
+  return document.documentElement.getAttribute('data-theme')||'dark';
+}
+function syncThemeButtons(){
+  const t=currentTheme();
+  document.getElementById('theme-btn-dark').classList.toggle('on', t==='dark');
+  document.getElementById('theme-btn-light').classList.toggle('on', t==='light');
+}
+function setTheme(mode){
+  document.documentElement.setAttribute('data-theme', mode);
+  localStorage.setItem(THEME_KEY, mode);
+  syncThemeButtons();
+  // Aşama/zincir renkleri JS'de doğrudan hex olarak set edildiği için yeniden çizilmeli
+  if(S){ renderMe(); }
+}
+(function initTheme(){
+  const saved=localStorage.getItem(THEME_KEY)||'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+
 function doLogout(){
   clearSession();
   S=null; sel=null;
@@ -1031,6 +1134,7 @@ function showApp(){
   document.getElementById('hdr-date').textContent=dateLabel();
   document.getElementById('hdr-name').textContent=S.name;
   document.getElementById('hdr-avatar').textContent=S.name.slice(0,1).toUpperCase();
+  document.getElementById('bn-avatar').textContent=S.name.slice(0,1).toUpperCase();
   document.getElementById('hdr-hijri').textContent='🌙 '+hijriDate();
   const todayEntry=S.history.find(h=>h.date===todayStr());
   const input=document.getElementById('page-input');
@@ -1160,15 +1264,17 @@ function getTotalChainDay(levelIndex, streak){
 
 function totalChainDayHTML(levelIndex, streak){
   const {doneDays,totalDays}=getTotalChainDay(levelIndex,streak);
-  const color=CHAIN_COLORS[Math.min(levelIndex,CHAIN_COLORS.length-1)];
+  const chainColors=chainColorsTable();
+  const color=chainColors[Math.min(levelIndex,chainColors.length-1)];
   return `<span style="color:${color};font-size:18px;font-weight:700">${doneDays}</span><span style="color:${color};font-size:11px;font-weight:600;opacity:.75">/${totalDays}</span>`;
 }
 
 function miniChainHTML(levelIndex, streak){
   const totalDays=LEVELS.reduce((a,l)=>a+l.days,0);
   let segs='';
+  const chainColors=chainColorsTable();
   LEVELS.forEach((lvl,i)=>{
-    const color=CHAIN_COLORS[i];
+    const color=chainColors[i];
     const widthPct=(lvl.days/totalDays)*100;
     let fillPct=0;
     if(i<levelIndex) fillPct=100;
@@ -1259,9 +1365,9 @@ async function renderGroupTab(){
    TABS
 ══════════════════════════════ */
 function switchTab(id){
-  document.getElementById('tb-me').classList.toggle('on',id==='me');
-  document.getElementById('tb-yol').classList.toggle('on',id==='yol');
-  document.getElementById('tb-grup').classList.toggle('on',id==='grup');
+  document.getElementById('bn-me').classList.toggle('on',id==='me');
+  document.getElementById('bn-yol').classList.toggle('on',id==='yol');
+  document.getElementById('bn-grup').classList.toggle('on',id==='grup');
   document.getElementById('tab-me').classList.toggle('on',id==='me');
   document.getElementById('tab-yol').classList.toggle('on',id==='yol');
   document.getElementById('tab-grup').classList.toggle('on',id==='grup');
@@ -1318,6 +1424,17 @@ const STAGE_COLORS = {
   10: {color:'#29B6D4', label:'İlerleme'},
   20: {color:'#F5C842', label:'Cüz tamamlandı'},
 };
+// Açık modda aynı etiketler, beyaz zemin üzerinde okunaklı olacak koyulukta renkler
+const STAGE_COLORS_LIGHT = {
+  1:  {color:'#7A9E3F', label:'Başlangıç'},
+  3:  {color:'#16A34A', label:'Alışma'},
+  5:  {color:'#0E8F73', label:'Gelişme'},
+  10: {color:'#1379A6', label:'İlerleme'},
+  20: {color:'#B45309', label:'Cüz tamamlandı'},
+};
+function stageColorsTable(){
+  return currentTheme()==='light' ? STAGE_COLORS_LIGHT : STAGE_COLORS;
+}
 
 function getStage(val){
   let stage=1;
@@ -1338,7 +1455,7 @@ function quickSet(val){
 
 function updateQuickBtns(val){
   const stage=getStage(val);
-  const color=STAGE_COLORS[stage].color;
+  const color=stageColorsTable()[stage].color;
   document.querySelectorAll('#quick-btns button').forEach(b=>{
     const active=parseInt(b.textContent)===val;
     b.classList.toggle('active', active);
@@ -1374,7 +1491,7 @@ function onPageInput(raw){
 
   document.getElementById('no-read-btn').classList.remove('sel');
   const stage=getStage(val);
-  const {color,label}=STAGE_COLORS[stage];
+  const {color,label}=stageColorsTable()[stage];
 
   input.style.color=color;
   document.getElementById('slider-lbl-text').textContent=label;
@@ -1599,6 +1716,10 @@ function renderMe(){
    ZİNCİR GÖRSELİ
 ══════════════════════════════ */
 const CHAIN_COLORS=['#A8D86B','#3DDC84','#2BC4A0','#29B6D4','#F5C842','#E8A5FF'];
+const CHAIN_COLORS_LIGHT=['#7A9E3F','#16A34A','#0E8F73','#1379A6','#B45309','#8B3FD1'];
+function chainColorsTable(){
+  return currentTheme()==='light' ? CHAIN_COLORS_LIGHT : CHAIN_COLORS;
+}
 const CHAIN_NAMES=['1\'ler','3\'ler','5\'ler','10\'lar','20\'ler','Hatim'];
 
 function renderChain(){
@@ -1606,9 +1727,10 @@ function renderChain(){
   const labels=document.getElementById('chain-labels');
   track.innerHTML=''; labels.innerHTML='';
   const totalDays=LEVELS.reduce((a,l)=>a+l.days,0);
+  const chainColors=chainColorsTable();
 
   LEVELS.forEach((lvl,i)=>{
-    const color=CHAIN_COLORS[i];
+    const color=chainColors[i];
     const done=i<S.levelIndex;
     const act=i===S.levelIndex;
 
@@ -1931,7 +2053,7 @@ function onModalSlider(val){
 
   document.getElementById('modal-no-read-btn').classList.remove('sel');
   const stage=getStage(val);
-  const {color,label}=STAGE_COLORS[stage];
+  const {color,label}=stageColorsTable()[stage];
   const pct=(val/20)*100;
   slider.style.background=`linear-gradient(to right, ${color} ${pct}%, var(--sur2) ${pct}%)`;
   slider.style.setProperty('--thumb-color',color);
