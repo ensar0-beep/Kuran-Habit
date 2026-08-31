@@ -14,7 +14,7 @@
 :root {
   --bg:#161B22; --sur:#1E2530; --sur2:#252D3A; --bor:#2D3748;
   --grn:#3DDC84; --grn-dim:#1A3A2A; --grn-txt:#3DDC84;
-  --txt:#FFFFFF; --mut:#8892A4; --mut2:#5A6478;
+  --txt:#FFFFFF; --mut:#8892A4; --mut2:#5A6478; --mut-strong:#A3ADC0;
   --gold:#F5C842; --gold-dim:#2A2010; --red:#FF5C5C; --red-dim:#3A1A1A;
   --r:14px; --rs:10px;
 }
@@ -22,7 +22,7 @@
 :root[data-theme="light"] {
   --bg:#F6F8F6; --sur:#FFFFFF; --sur2:#EEF2EF; --bor:#DCE3DE;
   --grn:#16A34A; --grn-dim:#E3F6EA; --grn-txt:#16A34A;
-  --txt:#151A17; --mut:#5B655F; --mut2:#8B958E;
+  --txt:#151A17; --mut:#5B655F; --mut2:#8B958E; --mut-strong:#424A45;
   --gold:#B45309; --gold-dim:#FCF1DC; --red:#DC2626; --red-dim:#FCEAEA;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -87,17 +87,23 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .user-chip{display:flex;align-items:center;gap:9px;background:var(--sur);border:1px solid var(--bor);border-radius:100px;padding:5px 6px 5px 14px;cursor:pointer;font-family:inherit;transition:all .15s}
 .user-chip:active{background:var(--sur2);transform:scale(0.97)}
 .user-chip-name{font-size:13px;font-weight:600;color:var(--txt);letter-spacing:.01em}
-.user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--grn),#1A8A5A);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#06130C}
+.user-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#06130C}
+/* AVATAR RENK SEÇENEKLERİ (profil menüsünden seçilebilir) */
+.av-1{background:linear-gradient(135deg,#3DDC84,#1A8A5A)}
+.av-2{background:linear-gradient(135deg,#F5C842,#B8860B)}
+.av-3{background:linear-gradient(135deg,#29B6D4,#1379A6)}
+.av-4{background:linear-gradient(135deg,#FF7A90,#C23A54)}
+.av-5{background:linear-gradient(135deg,#A78BFA,#6D4FC4)}
+.av-6{background:linear-gradient(135deg,#FFA857,#D97706)}
 .btn-sm{background:none;border:1px solid var(--bor);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--mut);cursor:pointer}
 
 /* ALT NAVİGASYON */
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--bor);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 2px;background:none;border:none;border-radius:12px;color:var(--mut);cursor:pointer;font-family:inherit;transition:color .15s}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--bor);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 2px;min-height:44px;background:none;border:none;border-radius:12px;color:var(--mut-strong);cursor:pointer;font-family:inherit;transition:color .15s}
 .bn-item.on{color:var(--grn)}
 .bn-icon{width:22px;height:22px;flex-shrink:0}
 .bn-icon svg{width:100%;height:100%;display:block}
 .bn-label{font-size:11px;font-weight:600}
-.bn-avatar{width:22px;height:22px;font-size:9px}
 
 /* PROFİL MENÜSÜ */
 .profile-menu-head{display:flex;align-items:center;gap:12px;padding:2px 4px 16px}
@@ -111,6 +117,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .pm-theme-switch{display:flex;background:var(--sur2);border-radius:100px;padding:3px;gap:2px}
 .pm-theme-btn{padding:6px 12px;background:none;border:none;border-radius:100px;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer;font-family:inherit}
 .pm-theme-btn.on{background:var(--grn);color:#06130C}
+.pm-avatar-block{flex-direction:column;align-items:stretch;gap:10px;cursor:default}
+.pm-avatar-picker{display:flex;gap:10px;flex-wrap:wrap}
+.pm-av-swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;flex-shrink:0}
+.pm-av-swatch.sel{border-color:var(--txt)}
 
 .pane{display:none;padding:16px 18px;max-width:520px;margin:0 auto}
 .pane.on{display:block}
@@ -277,7 +287,7 @@ input[type=range].pgslider::-moz-range-thumb{
 
 .grup-member-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:14px 16px;margin-bottom:9px;display:flex;align-items:center;gap:13px}
 .grup-member-card.is-me{border-color:var(--grn);border-width:2px}
-.grup-member-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--grn),var(--gold));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#06130C;flex-shrink:0}
+.grup-member-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#06130C;flex-shrink:0}
 .grup-member-info{flex:1;min-width:0}
 .grup-member-name-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .grup-member-name{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -544,7 +554,7 @@ input[type=range].pgslider::-moz-range-thumb{
 
     <!-- Zincir görünümü -->
     <div class="chain-card">
-      <div class="chain-card-title">Yolculuk Zinciri</div>
+      <div class="chain-card-title">İlerleme Zinciri</div>
       <div class="chain-lbl-row"><span>1'ler</span><span>Hatim</span></div>
       <div class="chain-track" id="chain-track"></div>
       <div class="chain-labels" id="chain-labels"></div>
@@ -631,15 +641,11 @@ input[type=range].pgslider::-moz-range-thumb{
     </button>
     <button class="bn-item" id="bn-yol" onclick="switchTab('yol')">
       <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/></svg></span>
-      <span class="bn-label">Yolculuk</span>
+      <span class="bn-label">İlerlemem</span>
     </button>
     <button class="bn-item" id="bn-grup" onclick="switchTab('grup')">
       <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M15.3 14.3c2.5.5 4.2 2.6 4.2 5.2"/></svg></span>
       <span class="bn-label">Grup</span>
-    </button>
-    <button class="bn-item" id="bn-profil" onclick="openProfileMenu()" aria-label="Profil menüsü">
-      <span class="user-avatar bn-avatar" id="bn-avatar"></span>
-      <span class="bn-label">Profil</span>
     </button>
   </nav>
 </div>
@@ -672,6 +678,18 @@ input[type=range].pgslider::-moz-range-thumb{
       <div>
         <div class="profile-menu-name" id="pm-name"></div>
         <div class="profile-menu-sub">Kullanıcı</div>
+      </div>
+    </div>
+
+    <div class="profile-menu-item pm-avatar-block">
+      <span>Avatar</span>
+      <div class="pm-avatar-picker" id="pm-avatar-picker">
+        <button class="pm-av-swatch av-1" data-id="1" onclick="setAvatar('1')" aria-label="Yeşil avatar"></button>
+        <button class="pm-av-swatch av-2" data-id="2" onclick="setAvatar('2')" aria-label="Altın avatar"></button>
+        <button class="pm-av-swatch av-3" data-id="3" onclick="setAvatar('3')" aria-label="Mavi avatar"></button>
+        <button class="pm-av-swatch av-4" data-id="4" onclick="setAvatar('4')" aria-label="Mercan avatar"></button>
+        <button class="pm-av-swatch av-5" data-id="5" onclick="setAvatar('5')" aria-label="Mor avatar"></button>
+        <button class="pm-av-swatch av-6" data-id="6" onclick="setAvatar('6')" aria-label="Turuncu avatar"></button>
       </div>
     </div>
 
@@ -903,7 +921,7 @@ async function hashPassword(pw){
 let S=null, sel=null;
 
 function freshState(name){
-  return {name,levelIndex:0,streak:0,totalDays:0,history:[],todayLogged:false,todayDate:null,currentPage:null,groupCode:null};
+  return {name,levelIndex:0,streak:0,totalDays:0,history:[],todayLogged:false,todayDate:null,currentPage:null,groupCode:null,avatarId:'1'};
 }
 function loadLocal(){try{const r=localStorage.getItem(LOCAL_KEY);return r?JSON.parse(r):null}catch(e){return null}}
 function saveLocal(){localStorage.setItem(LOCAL_KEY,JSON.stringify(S))}
@@ -1012,6 +1030,7 @@ async function handleLogin(){
 async function loadUserData(name){
   const saved=loadLocal();
   S=(saved&&saved.name===name)?saved:freshState(name);
+  if(!S.avatarId) S.avatarId='1';
   if(S.todayDate!==todayStr()){S.todayLogged=false;S.todayDate=todayStr();}
   saveLocal();
   try{
@@ -1022,6 +1041,7 @@ async function loadUserData(name){
       S.totalDays=remote.totalDays??S.totalDays;
       if(remote.currentPage) S.currentPage=remote.currentPage;
       if(remote.groupCode) S.groupCode=remote.groupCode;
+      if(remote.avatarId) S.avatarId=remote.avatarId;
       if(!S.todayLogged&&remote.todayLogged&&remote.todayDate===todayStr()){
         S.todayLogged=true;S.todayDate=todayStr();
       }
@@ -1058,8 +1078,23 @@ function confirmLogout(){
 function openProfileMenu(){
   document.getElementById('pm-name').textContent=S.name;
   document.getElementById('pm-avatar').textContent=S.name.slice(0,1).toUpperCase();
+  document.getElementById('pm-avatar').className='user-avatar profile-menu-avatar av-'+(S.avatarId||'1');
   syncThemeButtons();
+  syncAvatarSwatches();
   document.getElementById('profile-modal').classList.add('on');
+}
+
+function setAvatar(id){
+  S.avatarId=id;
+  saveLocal();
+  syncToFb();
+  document.getElementById('hdr-avatar').className='user-avatar av-'+id;
+  document.getElementById('pm-avatar').className='user-avatar profile-menu-avatar av-'+id;
+  syncAvatarSwatches();
+}
+function syncAvatarSwatches(){
+  const id=(S&&S.avatarId)||'1';
+  document.querySelectorAll('.pm-av-swatch').forEach(b=>b.classList.toggle('sel', b.dataset.id===id));
 }
 function closeProfileMenu(){
   document.getElementById('profile-modal').classList.remove('on');
@@ -1139,7 +1174,7 @@ function showApp(){
   document.getElementById('hdr-date').textContent=dateLabel();
   document.getElementById('hdr-name').textContent=S.name;
   document.getElementById('hdr-avatar').textContent=S.name.slice(0,1).toUpperCase();
-  document.getElementById('bn-avatar').textContent=S.name.slice(0,1).toUpperCase();
+  document.getElementById('hdr-avatar').className='user-avatar av-'+(S.avatarId||'1');
   document.getElementById('hdr-hijri').textContent='🌙 '+hijriDate();
   const todayEntry=S.history.find(h=>h.date===todayStr());
   const input=document.getElementById('page-input');
@@ -1156,7 +1191,7 @@ function syncToFb(){
   fbSet('/members/'+safeKey(S.name),{
     name:S.name,levelIndex:S.levelIndex,streak:S.streak,
     totalDays:S.totalDays,todayLogged:S.todayLogged,todayDate:S.todayDate,
-    currentPage:S.currentPage||null,groupCode:S.groupCode||null,updatedAt:Date.now(),
+    currentPage:S.currentPage||null,groupCode:S.groupCode||null,avatarId:S.avatarId||'1',updatedAt:Date.now(),
     history14:S.history, // tüm geçmiş buluta yedeklenir (isim tarihsel kalma nedeniyle "history14")
   });
 }
@@ -1350,7 +1385,7 @@ async function renderGroupTab(){
     const div=document.createElement('div');
     div.className='grup-member-card'+(isMe?' is-me':'');
     div.innerHTML=`
-      <div class="grup-member-avatar">${initials}</div>
+      <div class="grup-member-avatar av-${m.avatarId||'1'}">${initials}</div>
       <div class="grup-member-info">
         <div class="grup-member-name-row">
           <span class="grup-member-name">${m.name}</span>
