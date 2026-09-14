@@ -308,24 +308,52 @@ input[type=range].pgslider::-moz-range-thumb{
 .lvi.compact .lvr{margin-bottom:0}
 .lvi.compact .lvn{font-size:12px}
 
-/* İSTATİSTİK */
+/* İSTATİSTİK — Apple Sağlık tarzı */
 .stat-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px;margin-bottom:14px}
-.stat-card-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:14px}
-.filter-tabs{display:flex;background:var(--sur2);border-radius:100px;padding:4px;gap:2px;margin-bottom:16px}
-.filter-btn{flex:1;padding:8px 6px;background:none;border:none;border-radius:100px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .15s;font-family:inherit}
-.filter-btn.on{color:#06130C;background:var(--grn)}
-.stat2-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
-.chart-bars{display:flex;align-items:flex-end;gap:3px;height:110px;margin-bottom:8px}
-.bar{flex:1;min-width:2px;border-radius:3px 3px 1px 1px;transition:height .5s cubic-bezier(.2,.8,.2,1),background-color .4s}
-.chart-axis{display:flex;font-size:10px;color:var(--mut2);font-variant-numeric:tabular-nums}
-.chart-axis.sparse{justify-content:space-between}
-.chart-axis.per-bar span{flex:1;text-align:center}
-.chart-empty{font-size:12px;color:var(--mut);text-align:center;padding:24px 0}
-.chart-legend{display:none;align-items:center;gap:8px;margin-top:14px;font-size:10px;color:var(--mut2)}
-.chart-legend.on{display:flex}
-.chart-legend .grad{flex:1;height:5px;border-radius:3px;background:linear-gradient(to right,var(--red),var(--grn))}
+.st-seg{display:flex;background:var(--sur2);border-radius:9px;padding:3px;gap:2px;margin-bottom:16px}
+.st-seg button{flex:1;padding:7px 4px;background:none;border:none;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;font-family:inherit;transition:all .15s}
+.st-seg button.on{background:var(--bg);color:var(--txt);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.st-head{margin-bottom:10px;min-height:58px}
+.st-eyebrow{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.st-head.scrub .st-eyebrow{color:var(--grn)}
+.st-val{display:flex;align-items:baseline;gap:6px;margin-top:2px}
+.st-num{font-size:30px;font-weight:800;color:var(--txt);line-height:1.1;font-variant-numeric:tabular-nums}
+.st-unit{font-size:14px;font-weight:600;color:var(--mut)}
+.st-range{font-size:12px;color:var(--mut);margin-top:2px}
+.st-chart{position:relative;-webkit-user-select:none;user-select:none;touch-action:pan-y}
+.st-chart svg{display:block;width:100%;height:190px;overflow:visible}
+.st-empty{font-size:12px;color:var(--mut);text-align:center;padding:40px 0}
+.st-grid{stroke:var(--bor);stroke-width:1}
+.st-ylabel{font-size:10px;fill:var(--mut2);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums}
+.st-xlabel{font-size:10px;fill:var(--mut2);font-family:'Inter',sans-serif;text-anchor:middle}
+.st-bar{fill:var(--grn);transition:opacity .12s}
+.st-bar.dim{opacity:.32}
+.st-bar.zero{fill:var(--sur2)}
+.st-avg{stroke:var(--gold);stroke-width:1.2;stroke-dasharray:3 3;opacity:.8}
+.st-scrub{stroke:var(--txt);stroke-width:1;opacity:.5}
+.st-callout{position:absolute;top:-6px;transform:translate(-50%,-100%);background:var(--sur2);border:1px solid var(--bor);border-radius:10px;padding:6px 10px;white-space:nowrap;pointer-events:none;box-shadow:0 8px 20px -8px rgba(0,0,0,.6);display:none;z-index:2}
+.st-callout.on{display:block}
+.st-callout .cv{font-size:15px;font-weight:800;color:var(--txt)}
+.st-callout .cv small{font-size:11px;font-weight:600;color:var(--mut);margin-left:3px}
+.st-callout .cd{font-size:10.5px;color:var(--mut);margin-top:1px}
+.st-hl{display:flex;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--bor)}
+.st-hl>div{flex:1;min-width:0}
+.st-hl .k{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.st-hl .v{font-size:14px;font-weight:700;color:var(--txt);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.st-hl .v b{color:var(--grn);font-weight:700}
+.st-hl .s{font-size:10.5px;color:var(--mut);margin-top:1px}
 
-.calendar-open-btn{width:100%;padding:15px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:9px;font-size:14px;font-weight:600;color:var(--txt);cursor:pointer;transition:all .15s;margin-bottom:14px}
+/* Okuma Geçmişi satırı */
+.hist-btn{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);margin:4px 0 14px;text-align:left;font-family:inherit;color:var(--txt);cursor:pointer;transition:background .15s}
+.hist-btn:active{background:var(--sur2)}
+.hist-ico{width:38px;height:38px;border-radius:11px;background:var(--grn-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hist-ico svg{width:20px;height:20px;stroke:var(--grn);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hist-txt{flex:1;min-width:0}
+.hist-t{display:block;font-size:14px;font-weight:700}
+.hist-s{display:block;font-size:11.5px;color:var(--mut);margin-top:2px}
+.hist-chev{flex-shrink:0;display:flex}
+.hist-chev svg{width:18px;height:18px;stroke:var(--mut2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 
 /* GRUP */
 .grup-intro{text-align:center;margin-bottom:22px;padding:8px}
@@ -361,8 +389,6 @@ input[type=range].pgslider::-moz-range-thumb{
 
 .grup-leave-btn{width:100%;padding:13px;margin-top:8px;background:transparent;border:1px solid var(--red);border-radius:var(--rs);font-size:13px;font-weight:600;color:var(--red);cursor:pointer}
 .grup-leave-btn:active{background:var(--red-dim)}
-.calendar-open-btn:active{background:var(--sur2)}
-.calendar-open-icon{font-size:16px;color:var(--grn)}
 .calendar-modal-inner{max-width:420px}
 
 /* HISTORY — AYLIK TAKVİM */
@@ -641,26 +667,34 @@ input[type=range].pgslider::-moz-range-thumb{
     <div id="lvls"></div>
 
     <!-- Okuma geçmişi (takvim) -->
-    <button class="calendar-open-btn" onclick="openCalendarModal()">
-      <span class="calendar-open-icon">▦</span>
-      <span>Okuma Geçmişi</span>
+    <button class="hist-btn" onclick="openCalendarModal()">
+      <span class="hist-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15.5l2 2 4-4.5"/></svg></span>
+      <span class="hist-txt"><span class="hist-t">Okuma Geçmişi</span><span class="hist-s">Takvimde gün gün gör, düzenle</span></span>
+      <span class="hist-chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
     </button>
 
-    <!-- İstatistik -->
+    <!-- İstatistik (Apple Sağlık tarzı) -->
     <div class="stat-card">
-      <div class="stat-card-title">İstatistik</div>
-      <div class="filter-tabs">
-        <button class="filter-btn on" id="stat-f-30" onclick="setStatFilter('30')">Son 30 gün</button>
-        <button class="filter-btn" id="stat-f-90" onclick="setStatFilter('90')">Son 3 ay</button>
-        <button class="filter-btn" id="stat-f-all" onclick="setStatFilter('all')">Tümü</button>
+      <div class="st-seg" id="st-seg">
+        <button data-p="w" onclick="setStatPeriod('w')">H</button>
+        <button data-p="m" class="on" onclick="setStatPeriod('m')">A</button>
+        <button data-p="6m" onclick="setStatPeriod('6m')">6A</button>
+        <button data-p="y" onclick="setStatPeriod('y')">Y</button>
       </div>
-      <div class="stat2-row">
-        <div class="sbox"><div class="snum" id="stat-rate">—</div><div class="slbl">Başarı Oranı</div></div>
-        <div class="sbox"><div class="snum" id="stat-avg">—</div><div class="slbl">Ort. Sayfa / Gün</div></div>
+      <div class="st-head" id="st-head">
+        <div class="st-eyebrow" id="st-eyebrow">Ortalama</div>
+        <div class="st-val"><span class="st-num" id="st-num">—</span><span class="st-unit" id="st-unit">sayfa/gün</span></div>
+        <div class="st-range" id="st-range"></div>
       </div>
-      <div class="chart-bars" id="chart-bars"></div>
-      <div class="chart-axis" id="chart-axis"></div>
-      <div class="chart-legend" id="chart-legend"><span>Düşük başarı</span><span class="grad"></span><span>Yüksek başarı</span></div>
+      <div class="st-chart" id="st-chart">
+        <div class="st-callout" id="st-callout"><div class="cv" id="st-cv"></div><div class="cd" id="st-cd"></div></div>
+        <svg id="st-svg"></svg>
+      </div>
+      <div class="st-hl">
+        <div><div class="k">Hedef</div><div class="v" id="st-hl-rate">—</div><div class="s">tutturma</div></div>
+        <div><div class="k">Toplam</div><div class="v" id="st-hl-total">—</div></div>
+        <div><div class="k">En iyi gün</div><div class="v" id="st-hl-best">—</div><div class="s" id="st-hl-best-d"></div></div>
+      </div>
     </div>
   </div>
 
@@ -1144,7 +1178,7 @@ function enterApp(){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app').style.display='';
   showApp();
-  if(!swipeInitialized){ initSwipe(); initNavGlass(); swipeInitialized=true; }
+  if(!swipeInitialized){ initSwipe(); initNavGlass(); initStatScrub(); swipeInitialized=true; }
   positionGlass(true);
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>positionGlass(true)); // font gelince genişlik değişebilir
   window.scrollTo(0,0);
@@ -2054,12 +2088,15 @@ function renderLevels(){
    İSTATİSTİK
 ══════════════════════════════ */
 const MONTHS_SHORT_TR=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-let statFilter='30';
+const DOW_1=['P','P','S','Ç','P','C','C']; // Paz Pzt Sal Çar Per Cum Cmt baş harfleri
+let statPeriod='m', statSel=-1, statData=null;
+
+function fmtDay(ds){ const d=(ds instanceof Date)?ds:new Date(ds+'T00:00:00'); return d.getDate()+' '+MONTHS_SHORT_TR[d.getMonth()]; }
 
 /* Belirli bir aralıktaki her günü {date,pages,success} olarak döner.
    Aralık, hesabın ilk kaydından önceye taşmaz; henüz kaydedilmemiş "bugün" sayılmaz. */
 function buildStatDays(rangeDays){
-  if(!S.history.length) return [];
+  if(!S||!S.history.length) return [];
   const todayDs=todayStr();
   const sorted=[...S.history].sort((a,b)=>a.date.localeCompare(b.date));
   const firstDs=sorted[0].date;
@@ -2068,9 +2105,7 @@ function buildStatDays(rangeDays){
     const d=new Date(todayDs+'T00:00:00'); d.setDate(d.getDate()-(rangeDays-1));
     startDs=localDS(d);
     if(startDs<firstDs) startDs=firstDs;
-  } else {
-    startDs=firstDs;
-  }
+  } else startDs=firstDs;
   const map={}; sorted.forEach(h=>map[h.date]=h);
   const list=[];
   let d=new Date(startDs+'T00:00:00');
@@ -2079,128 +2114,132 @@ function buildStatDays(rangeDays){
     const ds=localDS(d);
     if(ds===todayDs && !map[ds]){ d.setDate(d.getDate()+1); continue; }
     const e=map[ds];
-    list.push({date:ds, pages:e?(e.pages||0):0, success:e?!!e.success:false});
+    list.push({date:new Date(d), ds, pages:e?(e.pages||0):0, success:e?!!e.success:false});
     d.setDate(d.getDate()+1);
   }
   return list;
 }
 
-function bucketWeekly(list){
-  const buckets=[];
-  for(let i=0;i<list.length;i+=7){
-    const chunk=list.slice(i,i+7);
-    const pages=chunk.reduce((a,x)=>a+x.pages,0);
-    const ok=chunk.filter(x=>x.success).length;
-    buckets.push({avg:pages/chunk.length, ratio:ok/chunk.length, startDate:chunk[0].date});
+/* Döneme göre çubuk verisi */
+function statDataFor(p){
+  if(p==='w'||p==='m'){
+    const days=buildStatDays(p==='w'?7:30);
+    return {days, perDay:true, bars:days.map(x=>({v:x.pages,date:x.date,ds:x.ds}))};
   }
-  return buckets;
+  if(p==='6m'){
+    const days=buildStatDays(182); const bars=[];
+    for(let i=0;i<days.length;i+=7){ const c=days.slice(i,i+7); bars.push({v:+(c.reduce((a,x)=>a+x.pages,0)/c.length).toFixed(1),date:c[0].date,dateEnd:c[c.length-1].date}); }
+    return {days, perDay:false, bars};
+  }
+  const days=buildStatDays(365); const m={}, order=[];
+  days.forEach(x=>{ const k=x.date.getFullYear()+'-'+x.date.getMonth(); if(!m[k]){ m[k]={sum:0,n:0,date:new Date(x.date.getFullYear(),x.date.getMonth(),1)}; order.push(k);} m[k].sum+=x.pages; m[k].n++; });
+  return {days, perDay:false, bars:order.map(k=>({v:+(m[k].sum/m[k].n).toFixed(1),date:m[k].date,month:true}))};
 }
 
-function bucketMonthly(list){
-  const order=[], map={};
-  list.forEach(x=>{
-    const key=x.date.slice(0,7);
-    if(!map[key]){ map[key]={pages:0,ok:0,n:0}; order.push(key); }
-    map[key].pages+=x.pages; if(x.success) map[key].ok++; map[key].n++;
-  });
-  return order.map(key=>({avg:map[key].pages/map[key].n, ratio:map[key].ok/map[key].n, key}));
-}
-
-function mixColor(ratio){
-  const red=[255,92,92], grn=[61,220,132];
-  const r=Math.round(red[0]+(grn[0]-red[0])*ratio);
-  const g=Math.round(red[1]+(grn[1]-red[1])*ratio);
-  const b=Math.round(red[2]+(grn[2]-red[2])*ratio);
-  return `rgb(${r},${g},${b})`;
-}
-
-function fmtDay(ds){
-  const d=new Date(ds+'T00:00:00');
-  return d.getDate()+' '+MONTHS_SHORT_TR[d.getMonth()];
-}
-
-function setAxis(axisEl, labels, perBar){
-  axisEl.className='chart-axis'+(perBar?' per-bar':' sparse');
-  labels.forEach(l=>{ const s=document.createElement('span'); s.textContent=l; axisEl.appendChild(s); });
-}
-
-function renderRateAvg(list){
-  const rateEl=document.getElementById('stat-rate'), avgEl=document.getElementById('stat-avg');
-  if(!list.length){ rateEl.textContent='—'; avgEl.textContent='—'; return; }
-  const ok=list.filter(x=>x.success).length;
-  rateEl.textContent=Math.round(ok/list.length*100)+'%';
-  avgEl.textContent=(list.reduce((a,x)=>a+x.pages,0)/list.length).toFixed(1).replace('.',',');
-}
-
-function setStatFilter(mode){
-  statFilter=mode;
-  document.getElementById('stat-f-30').classList.toggle('on', mode==='30');
-  document.getElementById('stat-f-90').classList.toggle('on', mode==='90');
-  document.getElementById('stat-f-all').classList.toggle('on', mode==='all');
+function setStatPeriod(p){
+  statPeriod=p; statSel=-1;
+  document.querySelectorAll('#st-seg button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
   renderStats();
 }
 
-function renderStats(){
-  const barsEl=document.getElementById('chart-bars');
-  const axisEl=document.getElementById('chart-axis');
-  const legendEl=document.getElementById('chart-legend');
+function statLabelFor(b){
+  if(statData.perDay) return fmtDay(b.date)+' '+b.date.getFullYear();
+  if(b.month) return MONTHS_SHORT_TR[b.date.getMonth()]+' '+b.date.getFullYear();
+  return fmtDay(b.date)+' – '+fmtDay(b.dateEnd);
+}
 
-  if(!S.history.length){
-    document.getElementById('stat-rate').textContent='—';
-    document.getElementById('stat-avg').textContent='—';
-    barsEl.innerHTML='<div class="chart-empty">Henüz veri yok</div>';
-    axisEl.innerHTML=''; legendEl.classList.remove('on');
+function renderStats(){
+  const svg=document.getElementById('st-svg'); if(!svg) return;
+  const head=document.getElementById('st-head'), callout=document.getElementById('st-callout');
+  statData=statDataFor(statPeriod);
+  const D=statData, n=D.bars.length;
+
+  if(!n){
+    svg.innerHTML='<foreignObject x="0" y="0" width="100%" height="190"><div xmlns="http://www.w3.org/1999/xhtml" class="st-empty">Henüz veri yok</div></foreignObject>';
+    document.getElementById('st-eyebrow').textContent='Ortalama';
+    document.getElementById('st-num').textContent='—'; document.getElementById('st-range').textContent='';
+    callout.classList.remove('on'); head.classList.remove('scrub');
+    ['st-hl-rate','st-hl-total','st-hl-best'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('st-hl-best-d').textContent='';
     return;
   }
 
-  barsEl.innerHTML=''; axisEl.innerHTML='';
+  const W=svg.clientWidth||318, H=190, padR=30, padB=22, padT=10;
+  const maxv=Math.max(...D.bars.map(b=>b.v),1);
+  const nice=maxv<=5?5:maxv<=10?10:maxv<=15?15:maxv<=20?20:Math.ceil(maxv/10)*10;
+  const innerW=W-padR, innerH=H-padB-padT;
+  const gap=n>20?2:n>10?4:8; const bw=(innerW-gap*(n-1))/n;
+  const y=v=>padT+innerH-(v/nice)*innerH;
+  let out='';
+  [0,nice/2,nice].forEach(g=>{ out+='<line class="st-grid" x1="0" x2="'+innerW+'" y1="'+y(g)+'" y2="'+y(g)+'"/><text class="st-ylabel" x="'+(innerW+8)+'" y="'+(y(g)+3.5)+'">'+g+'</text>'; });
+  D.bars.forEach((b,i)=>{ const x=i*(bw+gap); const h=Math.max(b.v>0?3:2,(b.v/nice)*innerH); const r=Math.min(bw/2,4);
+    out+='<rect class="st-bar'+(b.v===0?' zero':'')+(statSel>=0&&statSel!==i?' dim':'')+'" x="'+x+'" y="'+(y(0)-h)+'" width="'+bw+'" height="'+h+'" rx="'+r+'"/>'; });
+  const totalPages=D.days.reduce((a,x)=>a+x.pages,0);
+  const avg=D.days.length? totalPages/D.days.length : 0;
+  out+='<line class="st-avg" x1="0" x2="'+innerW+'" y1="'+y(Math.min(avg,nice))+'" y2="'+y(Math.min(avg,nice))+'"/>';
+  // x etiketleri
+  D.bars.forEach((b,i)=>{
+    let show=false, lab='';
+    if(statPeriod==='w'){ show=true; lab=DOW_1[b.date.getDay()]; }
+    else if(statPeriod==='m'){ show=(i%5===0||i===n-1); lab=String(b.date.getDate()); }
+    else if(statPeriod==='6m'){ show=(i===0||b.date.getMonth()!==D.bars[i-1].date.getMonth()); lab=MONTHS_SHORT_TR[b.date.getMonth()]; }
+    else { show=true; lab=MONTHS_SHORT_TR[b.date.getMonth()][0]; }
+    if(show) out+='<text class="st-xlabel" x="'+(i*(bw+gap)+bw/2)+'" y="'+(H-4)+'">'+lab+'</text>';
+  });
+  if(statSel>=0){ const x=statSel*(bw+gap)+bw/2; out+='<line class="st-scrub" x1="'+x+'" x2="'+x+'" y1="'+padT+'" y2="'+y(0)+'"/>'; }
+  svg.innerHTML=out;
 
-  if(statFilter==='30'){
-    const list=buildStatDays(30);
-    renderRateAvg(list);
-    const max=Math.max(...list.map(x=>x.pages),1);
-    list.forEach(x=>{
-      const bar=document.createElement('div');
-      bar.className='bar';
-      bar.style.height=(x.pages===0?4:Math.max(6,Math.round(x.pages/max*100)))+'%';
-      bar.style.background=x.success?'var(--grn)':'var(--red)';
-      bar.title=fmtDay(x.date)+' · '+x.pages+' sayfa'+(x.success?' · hedef tutturuldu':' · hedefin altında');
-      barsEl.appendChild(bar);
-    });
-    setAxis(axisEl, [fmtDay(list[0].date), fmtDay(list[Math.floor(list.length/2)].date), 'Bugün'], false);
-    legendEl.classList.remove('on');
-  } else if(statFilter==='90'){
-    const list=buildStatDays(90);
-    renderRateAvg(list);
-    const buckets=bucketWeekly(list);
-    const max=Math.max(...buckets.map(b=>b.avg),1);
-    buckets.forEach(b=>{
-      const bar=document.createElement('div');
-      bar.className='bar';
-      bar.style.height=Math.max(6,Math.round(b.avg/max*100))+'%';
-      bar.style.background=mixColor(b.ratio);
-      bar.title=fmtDay(b.startDate)+' haftası · ort. '+b.avg.toFixed(1)+' sayfa · %'+Math.round(b.ratio*100)+' başarı';
-      barsEl.appendChild(bar);
-    });
-    setAxis(axisEl, [fmtDay(buckets[0].startDate), fmtDay(buckets[Math.floor(buckets.length/2)].startDate), 'Bugün'], false);
-    legendEl.classList.add('on');
+  const first=D.days[0].date, last=D.days[D.days.length-1].date;
+  if(statSel>=0){
+    const b=D.bars[statSel]; head.classList.add('scrub');
+    document.getElementById('st-eyebrow').textContent=D.perDay?'Seçili gün':'Seçili dönem · ortalama';
+    document.getElementById('st-num').textContent=String(b.v).replace('.',',');
+    document.getElementById('st-unit').textContent=D.perDay?'sayfa':'sayfa/gün';
+    document.getElementById('st-range').textContent=statLabelFor(b);
+    callout.classList.add('on'); callout.style.left=(statSel*(bw+gap)+bw/2)+'px';
+    document.getElementById('st-cv').innerHTML=String(b.v).replace('.',',')+'<small>'+(D.perDay?'sayfa':'sayfa/gün')+'</small>';
+    document.getElementById('st-cd').textContent=statLabelFor(b);
   } else {
-    const list=buildStatDays(null);
-    renderRateAvg(list);
-    const buckets=bucketMonthly(list);
-    const max=Math.max(...buckets.map(b=>b.avg),1);
-    buckets.forEach(b=>{
-      const bar=document.createElement('div');
-      bar.className='bar';
-      bar.style.height=Math.max(6,Math.round(b.avg/max*100))+'%';
-      bar.style.background=mixColor(b.ratio);
-      const [y,m]=b.key.split('-');
-      bar.title=MONTHS_SHORT_TR[parseInt(m)-1]+' '+y+' · ort. '+b.avg.toFixed(1)+' sayfa · %'+Math.round(b.ratio*100)+' başarı';
-      barsEl.appendChild(bar);
-    });
-    setAxis(axisEl, buckets.map(b=>MONTHS_SHORT_TR[parseInt(b.key.split('-')[1])-1]), true);
-    legendEl.classList.add('on');
+    head.classList.remove('scrub'); callout.classList.remove('on');
+    document.getElementById('st-eyebrow').textContent='Ortalama';
+    document.getElementById('st-num').textContent=avg.toFixed(1).replace('.',',');
+    document.getElementById('st-unit').textContent='sayfa/gün';
+    document.getElementById('st-range').textContent= statPeriod==='y'
+      ? MONTHS_SHORT_TR[first.getMonth()]+' '+first.getFullYear()+' – '+MONTHS_SHORT_TR[last.getMonth()]+' '+last.getFullYear()
+      : fmtDay(first)+' – '+fmtDay(last)+' '+last.getFullYear();
   }
+
+  // öne çıkanlar
+  const okr=Math.round(D.days.filter(x=>x.success).length/D.days.length*100);
+  const best=D.days.reduce((a,x)=>x.pages>a.pages?x:a,D.days[0]);
+  document.getElementById('st-hl-rate').innerHTML='<b>%'+okr+'</b>';
+  document.getElementById('st-hl-total').textContent=totalPages+' sayfa';
+  document.getElementById('st-hl-best').textContent=best.pages+' sayfa';
+  document.getElementById('st-hl-best-d').textContent=fmtDay(best.date);
+}
+
+/* Grafikte dokun/sürükle ile çubuk seçme (yatay hareket; dikeyde sayfa kaydırması korunur) */
+function initStatScrub(){
+  const chart=document.getElementById('st-chart'); if(!chart) return;
+  const pick=clientX=>{
+    if(!statData||!statData.bars.length) return;
+    const svg=document.getElementById('st-svg'); const r=svg.getBoundingClientRect();
+    const n=statData.bars.length, innerW=r.width-30, gap=n>20?2:n>10?4:8, bw=(innerW-gap*(n-1))/n;
+    let i=Math.round((clientX-r.left-bw/2)/(bw+gap)); i=Math.max(0,Math.min(n-1,i));
+    if(i!==statSel){ statSel=i; renderStats(); }
+  };
+  const clear=()=>{ if(statSel!==-1){ statSel=-1; renderStats(); } };
+  let sx=0, sy=0, lock=null;
+  chart.addEventListener('touchstart', e=>{ e.stopPropagation(); if(e.touches.length!==1) return; sx=e.touches[0].clientX; sy=e.touches[0].clientY; lock=null; pick(sx); }, {passive:true});
+  chart.addEventListener('touchmove', e=>{ e.stopPropagation(); const x=e.touches[0].clientX, y=e.touches[0].clientY;
+    if(!lock){ const dx=Math.abs(x-sx), dy=Math.abs(y-sy); if(dx<6&&dy<6) return; lock=dx>dy?'h':'v'; if(lock==='v'){ clear(); return; } }
+    if(lock!=='h') return; if(e.cancelable) e.preventDefault(); pick(x); }, {passive:false});
+  chart.addEventListener('touchend', e=>{ e.stopPropagation(); clear(); }, {passive:true});
+  chart.addEventListener('touchcancel', e=>{ e.stopPropagation(); clear(); }, {passive:true});
+  // masaüstü: fareyle gezdirince
+  chart.addEventListener('mousemove', e=>pick(e.clientX));
+  chart.addEventListener('mouseleave', clear);
+  window.addEventListener('resize', ()=>{ if(S) renderStats(); });
 }
 
 /* ══════════════════════════════
