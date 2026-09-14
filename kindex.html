@@ -130,8 +130,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .pm-av-swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;flex-shrink:0}
 .pm-av-swatch.sel{border-color:var(--txt)}
 
-.pane{display:none;padding:16px 18px;max-width:520px;margin:0 auto}
-.pane.on{display:block}
+/* Sekmeler: yatay ray. Tüm pane'ler yan yana durur, ray translateX ile kayar. */
+.panes-viewport{width:100%;overflow:hidden;overflow:clip} /* clip: sticky'yi bozmadan taşmayı keser */
+.panes-track{display:flex;align-items:flex-start;width:100%;will-change:transform;transition:transform .32s cubic-bezier(.22,.8,.3,1)}
+.panes-track.dragging{transition:none}
+.pane{flex:0 0 100%;min-width:0;padding:16px max(18px,calc((100% - 520px)/2 + 18px))}
+/* Aktif olmayan pane'ler: ekran yüksekliğine kırpılır ve üstte yapışır ki sürüklerken
+   komşu sayfa, sen ne kadar aşağı kaydırmış olursan ol, üstten görünsün. */
+.pane:not(.on){position:sticky;top:0;max-height:100dvh;overflow:hidden}
 
 /* TODAY CARD */
 .tc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:20px;margin-bottom:14px}
@@ -494,6 +500,10 @@ input[type=range].pgslider::-moz-range-thumb{
     </header>
   </div>
 
+  <!-- Üç sekme yan yana bir ray üzerinde; parmakla sürüklenince birlikte kayar -->
+  <div class="panes-viewport" id="panes-viewport">
+  <div class="panes-track" id="panes-track">
+
   <!-- BUGÜN -->
   <div class="pane on" id="tab-me">
 
@@ -645,6 +655,9 @@ input[type=range].pgslider::-moz-range-thumb{
       <button class="grup-leave-btn" onclick="leaveGroup()">Gruptan Ayrıl</button>
     </div>
   </div>
+
+  </div><!-- /panes-track -->
+  </div><!-- /panes-viewport -->
 
   <!-- ALT NAVİGASYON -->
   <nav class="bottom-nav">
@@ -1073,10 +1086,14 @@ async function loadUserData(name){
 
 let swipeInitialized=false;
 function enterApp(){
+  // Giriş formunda klavye açıkken sayfa kaymış olabilir; uygulama en üstten başlasın
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app').style.display='';
   showApp();
   if(!swipeInitialized){ initSwipe(); swipeInitialized=true; }
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>window.scrollTo(0,0)); // iOS Safari layout sonrası ikinci kez
 }
 
 function confirmLogout(){
@@ -1416,52 +1433,102 @@ async function renderGroupTab(){
 /* ══════════════════════════════
    TABS
 ══════════════════════════════ */
-function switchTab(id){
+const TAB_ORDER=['me','yol','grup'];
+let curTab='me';
+
+function currentTabId(){ return curTab; }
+
+/* Sekme değişimi: alt nav hemen güncellenir, ray animasyonla kayar; pane sınıfları ve
+   sayfa-başına-dönüş animasyon bitince yapılır (kırpılmış komşu pane'in yükseklik sıçraması görünmesin diye). */
+function switchTab(id, opts){
+  const instant = opts && opts.instant;
+  const track=document.getElementById('panes-track');
+  const idx=TAB_ORDER.indexOf(id);
+  if(idx<0) return;
+
   document.getElementById('bn-me').classList.toggle('on',id==='me');
   document.getElementById('bn-yol').classList.toggle('on',id==='yol');
   document.getElementById('bn-grup').classList.toggle('on',id==='grup');
-  document.getElementById('tab-me').classList.toggle('on',id==='me');
-  document.getElementById('tab-yol').classList.toggle('on',id==='yol');
-  document.getElementById('tab-grup').classList.toggle('on',id==='grup');
+
+  // İçerik, kayma başlamadan hazır olsun
   if(id==='yol'){ renderChain(); renderLevels(); renderStats(); }
   if(id==='grup'){ loadGroupTab(); }
+
+  const finish=()=>{
+    TAB_ORDER.forEach(t=>document.getElementById('tab-'+t).classList.toggle('on', t===id));
+    window.scrollTo(0,0);
+  };
+
+  const wasTab=curTab;
+  curTab=id;
+  track.classList.remove('dragging');
+  if(instant || wasTab===id){
+    track.style.transform='translate3d('+(-idx*100)+'%,0,0)';
+    finish();
+    return;
+  }
+  let done=false;
+  const onEnd=e=>{ if(e.target!==track||done) return; done=true; track.removeEventListener('transitionend',onEnd); finish(); };
+  track.addEventListener('transitionend', onEnd);
+  // transition tetiklenmezse (kesildi vb.) yine de bitir — ama araya başka bir geçiş girdiyse dokunma
+  setTimeout(()=>{ if(done) return; done=true; track.removeEventListener('transitionend',onEnd); if(curTab===id) finish(); }, 420);
+  requestAnimationFrame(()=>{ track.style.transform='translate3d('+(-idx*100)+'%,0,0)'; });
 }
 
 /* ══════════════════════════════
-   SEKMELER ARASI KAYDIRMA (SWIPE)
+   SEKMELER ARASI KAYDIRMA (SWIPE) — ray parmağı takip eder
 ══════════════════════════════ */
-const TAB_ORDER=['me','yol','grup'];
-let swipeStartX=0, swipeStartY=0, swipeActive=false;
-
-function currentTabId(){
-  return TAB_ORDER.find(id=>document.getElementById('tab-'+id).classList.contains('on'))||'me';
-}
-
 function initSwipe(){
-  const container=document.getElementById('app');
-  container.addEventListener('touchstart', e=>{
+  const viewport=document.getElementById('panes-viewport');
+  const track=document.getElementById('panes-track');
+  let startX=0, startY=0, dx=0, lock=null, width=0, active=false;
+
+  viewport.addEventListener('touchstart', e=>{
     if(e.touches.length!==1) return;
-    swipeStartX=e.touches[0].clientX;
-    swipeStartY=e.touches[0].clientY;
-    swipeActive=true;
+    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+    dx=0; lock=null; active=true;
+    width=viewport.clientWidth;
   }, {passive:true});
 
-  container.addEventListener('touchend', e=>{
-    if(!swipeActive) return;
-    swipeActive=false;
-    const dx=e.changedTouches[0].clientX-swipeStartX;
-    const dy=e.changedTouches[0].clientY-swipeStartY;
-    // yatay hareket dikeyden belirgin şekilde fazla olmalı (dikey scroll ile karışmasın)
-    if(Math.abs(dx)<60 || Math.abs(dx)<Math.abs(dy)*1.5) return;
+  viewport.addEventListener('touchmove', e=>{
+    if(!active) return;
+    const x=e.touches[0].clientX, y=e.touches[0].clientY;
+    dx=x-startX; const dy=y-startY;
 
-    const cur=currentTabId();
-    const idx=TAB_ORDER.indexOf(cur);
-    if(dx<0 && idx<TAB_ORDER.length-1){
-      switchTab(TAB_ORDER[idx+1]); // sola kaydır -> sonraki sekme
-    } else if(dx>0 && idx>0){
-      switchTab(TAB_ORDER[idx-1]); // sağa kaydır -> önceki sekme
+    if(!lock){
+      if(Math.abs(dx)<8 && Math.abs(dy)<8) return;
+      lock = Math.abs(dx)>Math.abs(dy) ? 'h' : 'v';
+      if(lock==='h') track.classList.add('dragging');
     }
-  }, {passive:true});
+    if(lock!=='h') return;
+
+    if(e.cancelable) e.preventDefault(); // yatay sürüklerken sayfa dikey kaymasın
+    const idx=TAB_ORDER.indexOf(curTab);
+    let move=dx;
+    // uçlarda direnç: ilk sekmede sağa / son sekmede sola çekince daha az kayar
+    if((idx===0 && dx>0) || (idx===TAB_ORDER.length-1 && dx<0)) move=dx*0.3;
+    track.style.transform='translate3d('+(-idx*width+move)+'px,0,0)';
+  }, {passive:false});
+
+  const end=()=>{
+    if(!active) return;
+    active=false;
+    if(lock!=='h'){ return; }
+    const idx=TAB_ORDER.indexOf(curTab);
+    const threshold=Math.min(80, width*0.22);
+    let target=curTab;
+    if(dx<-threshold && idx<TAB_ORDER.length-1) target=TAB_ORDER[idx+1];
+    else if(dx>threshold && idx>0) target=TAB_ORDER[idx-1];
+    track.classList.remove('dragging');
+    if(target===curTab){
+      // geri yerine otur
+      requestAnimationFrame(()=>{ track.style.transform='translate3d('+(-idx*100)+'%,0,0)'; });
+    } else {
+      switchTab(target);
+    }
+  };
+  viewport.addEventListener('touchend', end, {passive:true});
+  viewport.addEventListener('touchcancel', end, {passive:true});
 }
 
 /* ══════════════════════════════
@@ -2166,7 +2233,10 @@ function saveEdit(){
 /* ══════════════════════════════
    BOOT
 ══════════════════════════════ */
+// Tarayıcı/PWA önceki scroll konumunu geri getirmesin; uygulama hep en üstten açılsın
+if('scrollRestoration' in history) history.scrollRestoration='manual';
 window.addEventListener('load', async ()=>{
+  window.scrollTo(0,0);
   const loggedIn = await tryAutoLogin();
   if(!loggedIn){
     document.getElementById('auth-screen').style.display='';
