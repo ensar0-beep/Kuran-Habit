@@ -92,8 +92,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 @keyframes sp{to{transform:rotate(360deg)}}
 
 /* HEADER + TABS (tek sabit blok) */
-.topbar{position:sticky;top:0;z-index:20;background:var(--bg)}
-.hdr{background:var(--bg);padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between}
+/* Üst bar: keskin çizgi yerine aşağı doğru kademeli şeffaflaşan + bulanıklığı azalan geçiş
+   (::before header'ın 24px altına taşar; renk de blur da o bölgede sıfıra iner) */
+.topbar{position:sticky;top:0;z-index:20;background:transparent}
+.topbar::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-24px;z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,var(--bg) 0%,var(--bg) 52%,transparent 100%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 50%,transparent 100%);
+  mask:linear-gradient(to bottom,#000 0%,#000 50%,transparent 100%)}
+.hdr{background:transparent;padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between}
 .hdr-date{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--grn)}
 .hdr-hijri{font-size:11px;color:var(--gold);margin-top:3px;font-weight:500}
 .hdr-name{font-size:16px;font-weight:700;color:var(--txt)}
