@@ -17,6 +17,9 @@
   --txt:#FFFFFF; --mut:#8892A4; --mut2:#5A6478; --mut-strong:#A3ADC0;
   --gold:#F5C842; --gold-dim:#2A2010; --red:#FF5C5C; --red-dim:#3A1A1A;
   --r:14px; --rs:10px;
+  /* yüzen cam alt bar */
+  --glass-bg:rgba(30,37,48,.72); --glass-bor:rgba(255,255,255,.08); --glass-hi:rgba(255,255,255,.06);
+  --glass-bubble:rgba(255,255,255,.10); --glass-bubble-bor:rgba(255,255,255,.12);
 }
 /* AÇIK MOD — aynı token adları, tersine çevrilmiş palet */
 :root[data-theme="light"] {
@@ -24,12 +27,14 @@
   --grn:#16A34A; --grn-dim:#E3F6EA; --grn-txt:#16A34A;
   --txt:#151A17; --mut:#5B655F; --mut2:#8B958E; --mut-strong:#424A45;
   --gold:#B45309; --gold-dim:#FCF1DC; --red:#DC2626; --red-dim:#FCEAEA;
+  --glass-bg:rgba(255,255,255,.74); --glass-bor:rgba(0,0,0,.07); --glass-hi:rgba(255,255,255,.9);
+  --glass-bubble:rgba(0,0,0,.07); --glass-bubble-bor:rgba(0,0,0,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;touch-action:pan-y;overscroll-behavior-y:contain}
 body{touch-action:pan-y}
 input,textarea,select{font-size:16px}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 
 .quick-btns{display:flex;gap:8px;margin-bottom:12px}
 .quick-btns button{flex:1;width:100%;display:block;padding:10px 4px;background:var(--sur2);border:1.5px solid var(--bor);border-radius:9px;font-size:15px;font-weight:700;color:var(--mut);cursor:pointer;transition:all .12s}
@@ -106,9 +111,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn-sm{background:none;border:1px solid var(--bor);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--mut);cursor:pointer}
 
 /* ALT NAVİGASYON */
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--bor);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 2px;min-height:44px;background:none;border:none;border-radius:12px;color:var(--mut-strong);cursor:pointer;font-family:inherit;transition:color .15s}
-.bn-item.on{color:var(--grn)}
+/* Yüzen cam kapsül (iOS 26 tarzı). Seçili sekmenin arkasında kayan bir cam kabarcık var;
+   bara basılı tutup sürükleyince kabarcık büyüyüp parmağı takip eder, bırakınca en yakın sekmeye oturur. */
+.bottom-nav{position:fixed;left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;
+  display:flex;align-items:stretch;padding:6px;border-radius:100px;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+  border:1px solid var(--glass-bor);
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.55),inset 0 1px 0 var(--glass-hi);
+  -webkit-user-select:none;user-select:none;touch-action:none}
+.bn-glass{position:absolute;top:6px;bottom:6px;left:0;width:60px;border-radius:100px;pointer-events:none;
+  background:var(--glass-bubble);border:1px solid var(--glass-bubble-bor);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  transform-origin:center;
+  transition:transform .42s cubic-bezier(.34,1.45,.45,1),width .42s cubic-bezier(.34,1.45,.45,1),background .2s,box-shadow .2s}
+.bn-glass.no-anim{transition:none}
+/* sürüklerken: büyüyen mercek + hafif renkli kenar */
+.bn-glass.lens{background:rgba(255,255,255,.15);transition:background .15s,box-shadow .15s;
+  box-shadow:0 10px 26px -8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.28)}
+.bn-glass::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;opacity:0;transition:opacity .2s;
+  background:conic-gradient(from 210deg,rgba(61,220,132,0),rgba(120,200,255,.55),rgba(245,200,66,.45),rgba(255,120,200,.45),rgba(61,220,132,0));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.bn-glass.lens::after{opacity:1}
+.bn-item{flex:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 2px;min-height:48px;background:none;border:none;border-radius:100px;color:var(--mut-strong);cursor:pointer;font-family:inherit;transition:color .15s}
+.bn-item.on,.bn-item.hover{color:var(--grn)}
 .bn-icon{width:22px;height:22px;flex-shrink:0}
 .bn-icon svg{width:100%;height:100%;display:block}
 .bn-label{font-size:11px;font-weight:600}
@@ -660,7 +686,8 @@ input[type=range].pgslider::-moz-range-thumb{
   </div><!-- /panes-viewport -->
 
   <!-- ALT NAVİGASYON -->
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" id="bottom-nav">
+    <span class="bn-glass no-anim" id="bn-glass"></span>
     <button class="bn-item on" id="bn-me" onclick="switchTab('me')">
       <span class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></span>
       <span class="bn-label">Bugün</span>
@@ -1091,7 +1118,9 @@ function enterApp(){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app').style.display='';
   showApp();
-  if(!swipeInitialized){ initSwipe(); swipeInitialized=true; }
+  if(!swipeInitialized){ initSwipe(); initNavGlass(); swipeInitialized=true; }
+  positionGlass(true);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>positionGlass(true)); // font gelince genişlik değişebilir
   window.scrollTo(0,0);
   requestAnimationFrame(()=>window.scrollTo(0,0)); // iOS Safari layout sonrası ikinci kez
 }
@@ -1449,6 +1478,7 @@ function switchTab(id, opts){
   document.getElementById('bn-me').classList.toggle('on',id==='me');
   document.getElementById('bn-yol').classList.toggle('on',id==='yol');
   document.getElementById('bn-grup').classList.toggle('on',id==='grup');
+  positionGlass(false);
 
   // İçerik, kayma başlamadan hazır olsun
   if(id==='yol'){ renderChain(); renderLevels(); renderStats(); }
@@ -1473,6 +1503,78 @@ function switchTab(id, opts){
   // transition tetiklenmezse (kesildi vb.) yine de bitir — ama araya başka bir geçiş girdiyse dokunma
   setTimeout(()=>{ if(done) return; done=true; track.removeEventListener('transitionend',onEnd); if(curTab===id) finish(); }, 420);
   requestAnimationFrame(()=>{ track.style.transform='translate3d('+(-idx*100)+'%,0,0)'; });
+}
+
+/* ══════════════════════════════
+   ALT BAR CAM KABARCIĞI
+══════════════════════════════ */
+function navItems(){ return TAB_ORDER.map(t=>document.getElementById('bn-'+t)); }
+
+/* Kabarcığı aktif sekmenin arkasına yerleştirir */
+function positionGlass(instant){
+  const glass=document.getElementById('bn-glass');
+  const el=document.querySelector('.bn-item.on');
+  if(!glass||!el||!el.offsetWidth) return;
+  glass.classList.toggle('no-anim', !!instant);
+  glass.style.width=el.offsetWidth+'px';
+  glass.style.transform='translate3d('+el.offsetLeft+'px,0,0)';
+  if(instant){ void glass.offsetWidth; glass.classList.remove('no-anim'); }
+}
+
+/* Bara basılı tutup sürükleme: kabarcık büyüyüp parmağı izler, bırakınca en yakın sekmeye oturur */
+function initNavGlass(){
+  const nav=document.getElementById('bottom-nav');
+  const glass=document.getElementById('bn-glass');
+  let startX=0, moved=false, active=false;
+
+  const nearest=x=>{
+    let best=null, bd=Infinity;
+    navItems().forEach((el,i)=>{ const c=el.offsetLeft+el.offsetWidth/2; const d=Math.abs(c-x); if(d<bd){bd=d;best=i;} });
+    return best;
+  };
+  const follow=x=>{
+    const items=navItems();
+    const w=items[0].offsetWidth;
+    const minC=items[0].offsetLeft+w/2, maxC=items[items.length-1].offsetLeft+w/2;
+    const c=Math.max(minC,Math.min(maxC,x));
+    glass.style.width=w+'px';
+    glass.style.transform='translate3d('+(c-w/2)+'px,0,0) scale(1.12)';
+    const n=nearest(c);
+    items.forEach((el,i)=>el.classList.toggle('hover', i===n && !el.classList.contains('on')));
+  };
+  const relX=e=>e.touches[0].clientX-nav.getBoundingClientRect().left;
+
+  nav.addEventListener('touchstart', e=>{
+    if(e.touches.length!==1) return;
+    active=true; moved=false; startX=relX(e);
+    glass.classList.add('lens'); glass.classList.add('no-anim');
+    follow(startX);
+  }, {passive:true});
+
+  nav.addEventListener('touchmove', e=>{
+    if(!active) return;
+    const x=relX(e);
+    if(Math.abs(x-startX)>6) moved=true;
+    e.preventDefault();
+    follow(x);
+  }, {passive:false});
+
+  const end=e=>{
+    if(!active) return; active=false;
+    glass.classList.remove('lens'); glass.classList.remove('no-anim');
+    navItems().forEach(el=>el.classList.remove('hover'));
+    if(moved){
+      if(e.cancelable) e.preventDefault(); // sürüklendiyse click tetiklenmesin
+      const x=e.changedTouches[0].clientX-nav.getBoundingClientRect().left;
+      const id=TAB_ORDER[nearest(Math.max(0,Math.min(nav.clientWidth,x)))];
+      if(id===curTab) positionGlass(false); else switchTab(id);
+    } else {
+      positionGlass(false); // dokunma: click switchTab'ı çağırır, kabarcık yerine dönsün
+    }
+  };
+  nav.addEventListener('touchend', end, {passive:false});
+  nav.addEventListener('touchcancel', end, {passive:false});
+  window.addEventListener('resize', ()=>positionGlass(true));
 }
 
 /* ══════════════════════════════
