@@ -260,11 +260,22 @@ input[type=range].pgslider::-moz-range-thumb{
 .loc-max{font-size:14px;color:var(--mut2)}
 .loc-meta{text-align:right}
 .loc-sure-name{display:block;font-size:15px;font-weight:600;color:var(--txt)}
-.loc-cuz{display:block;font-size:11px;color:var(--gold);margin-top:2px}
-.loc-progress-bg{height:6px;background:var(--sur2);border-radius:3px;overflow:hidden;margin-bottom:14px}
-.loc-progress-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--grn),var(--gold));transition:width .5s;width:0}
+.loc-ayet{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+/* cüz rayı */
+.juz-rail{display:flex;gap:3px;margin-bottom:6px}
+.juz-rail i{flex:1;height:10px;border-radius:3px;background:var(--sur2);transition:background .3s}
+.juz-rail i.d{background:var(--grn);opacity:.55}
+.juz-rail i.c{background:var(--gold);box-shadow:0 0 0 2px rgba(245,200,66,.25)}
+.juz-lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mut2);margin-bottom:12px}
+.juz-lbl b{color:var(--gold);font-weight:600}
+/* minimal aksiyon bağlantıları */
+.loc-actions{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.loc-link{display:inline-flex;align-items:center;gap:6px;background:none;border:none;padding:6px 0;font-size:12.5px;color:var(--mut);font-family:inherit;cursor:pointer;min-height:32px}
+.loc-link svg{width:14px;height:14px;stroke:var(--mut);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.loc-link:active{color:var(--txt)}
+.page-sheet-input{width:100%;font-size:22px;font-weight:700;text-align:center;padding:14px;margin-bottom:14px;-moz-appearance:textfield}
+.page-sheet-input::-webkit-outer-spin-button,.page-sheet-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
-.loc-btn-row{display:flex;gap:8px}
 .loc-input{flex:1;min-width:0;background:var(--sur2);border:1px solid var(--bor);border-radius:9px;padding:12px 13px;color:var(--txt);font-size:16px;font-family:inherit;outline:none;transition:border-color .15s}
 .loc-input:focus{border-color:var(--grn)}
 .loc-save-btn{padding:11px 20px;background:var(--sur2);border:1px solid var(--grn);border-radius:9px;font-size:13px;font-weight:600;color:var(--grn);cursor:pointer;transition:all .15s}
@@ -416,7 +427,6 @@ input[type=range].pgslider::-moz-range-thumb{
 
 .loc-display-clickable{cursor:pointer;transition:opacity .15s}
 .loc-display-clickable:active{opacity:.7}
-.loc-tap-hint{font-size:10px;color:var(--mut2);text-align:right;margin-bottom:10px;margin-top:-6px}
 
 /* AYET MEALİ MODAL */
 .ayet-modal-inner{max-width:480px}
@@ -616,7 +626,7 @@ input[type=range].pgslider::-moz-range-thumb{
     <!-- Konum -->
     <div class="loc-card">
       <div class="loc-top">
-        <div class="loc-title">Kuran'da Yerim</div>
+        <div class="loc-title">Kur'an'da Yerim</div>
       </div>
       <div class="loc-display loc-display-clickable" id="loc-display" onclick="openAyetModal()">
         <div class="loc-big">
@@ -625,15 +635,15 @@ input[type=range].pgslider::-moz-range-thumb{
         </div>
         <div class="loc-meta">
           <span class="loc-sure-name" id="loc-sure"></span>
-          <span class="loc-cuz" id="loc-cuz"></span>
+          <span class="loc-ayet" id="loc-ayet"></span>
         </div>
       </div>
-      <div class="loc-tap-hint" id="loc-tap-hint">Ayeti ve mealini görmek için dokun</div>
-      <div class="loc-progress-bg"><div class="loc-progress-fill" id="loc-progress"></div></div>
-
-      <div class="loc-btn-row">
-        <input class="loc-input" id="loc-manual-input" type="number" inputmode="numeric" min="1" max="604" placeholder="Sayfa gir" onkeydown="if(event.key==='Enter')saveLocPage()">
-        <button class="loc-save-btn loc-save-btn-main" onclick="saveLocPage()">Bu sayfadayım</button>
+      <!-- 30 cüzlük ray: geçilenler yeşil, içinde olunan altın -->
+      <div class="juz-rail" id="juz-rail"></div>
+      <div class="juz-lbl"><span>1. cüz</span><b id="loc-cuz"></b><span>30. cüz</span></div>
+      <div class="loc-actions">
+        <button class="loc-link" onclick="openPageSheet()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Sayfamı güncelle</button>
+        <button class="loc-link" onclick="openAyetModal()"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>Ayet ve meal için dokun</button>
       </div>
     </div>
 
@@ -761,6 +771,19 @@ input[type=range].pgslider::-moz-range-thumb{
       <span class="bn-label">Grup</span>
     </button>
   </nav>
+</div>
+
+<!-- SAYFA GÜNCELLEME SHEET'İ -->
+<div class="modal-bg" id="page-modal">
+  <div class="modal">
+    <div class="modal-date">Kur'an'da yerim</div>
+    <div class="modal-title">Hangi sayfadasın?</div>
+    <input class="loc-input page-sheet-input" id="loc-manual-input" type="number" inputmode="numeric" min="1" max="604" placeholder="1 – 604" onkeydown="if(event.key==='Enter')saveLocPage()">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closePageSheet()">İptal</button>
+      <button class="btn-save-modal" onclick="saveLocPage()">Bu sayfadayım</button>
+    </div>
+  </div>
 </div>
 
 <!-- TAKVİM MODAL -->
@@ -938,14 +961,12 @@ async function fetchPageData(p){
 async function updateLocSureDisplay(p){
   try{
     const info=await fetchPageData(p);
-    const lbl=info.ayetNo===1 ? info.sureName+' suresi' : info.sureName+' suresi ('+info.ayetNo+'. ayet)';
-    const el=document.getElementById('loc-sure');
-    const cuzEl=document.getElementById('loc-cuz');
-    if(el && S.currentPage===p) el.textContent=lbl;
-    if(cuzEl && S.currentPage===p) cuzEl.textContent=info.cuz+'. cüz';
+    if(S.currentPage!==p) return;
+    document.getElementById('loc-sure').textContent=info.sureName+' Suresi';
+    document.getElementById('loc-ayet').textContent=info.ayetNo+'. ayet';
+    renderJuzRail(info.cuz);
   }catch(e){
-    const el=document.getElementById('loc-sure');
-    if(el && S.currentPage===p) el.textContent=getSure(p)+' suresi';
+    if(S.currentPage===p) document.getElementById('loc-sure').textContent=getSure(p)+' Suresi';
   }
 }
 
@@ -1917,31 +1938,49 @@ function showMsg(type,txt){
 function saveLocPage(){
   const inp=document.getElementById('loc-manual-input');
   const p=parseInt(inp.value)||0;
-  if(p<1||p>604) return;
+  if(p<1||p>604){ inp.focus(); return; }
   S.currentPage=p;
   saveLocal();
   syncToFb();
   inp.value='';
   inp.blur();
+  closePageSheet();
   renderLoc();
+}
+
+/* Sayfa güncelleme sheet'i */
+function openPageSheet(){
+  const inp=document.getElementById('loc-manual-input');
+  inp.value=S.currentPage||'';
+  document.getElementById('page-modal').classList.add('on');
+  setTimeout(()=>{ inp.focus(); inp.select&&inp.select(); },50);
+}
+function closePageSheet(){
+  document.getElementById('page-modal').classList.remove('on');
+  document.getElementById('loc-manual-input').blur();
+}
+
+/* 30 cüzlük ray: geçilen cüzler yeşil, içinde olunan altın */
+function renderJuzRail(cuz){
+  const rail=document.getElementById('juz-rail');
+  if(!rail.children.length){ for(let i=0;i<30;i++) rail.appendChild(document.createElement('i')); }
+  [...rail.children].forEach((el,i)=>{ el.className = cuz? (i+1<cuz?'d': i+1===cuz?'c':'') : ''; });
+  document.getElementById('loc-cuz').textContent = cuz? cuz+'. cüzdesin' : '';
 }
 
 function renderLoc(){
   const p=S.currentPage;
-  const hint=document.getElementById('loc-tap-hint');
   if(p){
     document.getElementById('loc-pagenum').textContent=p;
-    document.getElementById('loc-sure').textContent=getSure(p)+' suresi'; // ilk anlık gösterim
-    document.getElementById('loc-cuz').textContent=Math.min(30,Math.ceil(p/20.13))+'. cüz'; // ilk anlık tahmin
-    updateLocSureDisplay(p); // gerçek veriyle günceller (sure adı + cüz)
-    document.getElementById('loc-progress').style.width=Math.round(p/604*100)+'%';
-    hint.style.display='';
+    document.getElementById('loc-sure').textContent=getSure(p)+' Suresi'; // ilk anlık gösterim
+    document.getElementById('loc-ayet').textContent='';
+    renderJuzRail(Math.min(30,Math.ceil(p/20.13))); // ilk anlık tahmin
+    updateLocSureDisplay(p); // gerçek veriyle günceller (sure + ayet + cüz)
   } else {
     document.getElementById('loc-pagenum').textContent='—';
-    document.getElementById('loc-sure').textContent='"Sayfa gir" ile başla';
-    document.getElementById('loc-cuz').textContent='';
-    document.getElementById('loc-progress').style.width='0%';
-    hint.style.display='none';
+    document.getElementById('loc-sure').textContent='Henüz sayfa girilmedi';
+    document.getElementById('loc-ayet').textContent='"Sayfamı güncelle" ile başla';
+    renderJuzRail(0);
   }
   const total=S.history.reduce((acc,h)=>acc+(h.pages||0),0);
   document.getElementById('s-totalpages').textContent=total;
