@@ -120,20 +120,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   border:1px solid var(--glass-bor);
   box-shadow:0 14px 34px -10px rgba(0,0,0,.55),inset 0 1px 0 var(--glass-hi);
   -webkit-user-select:none;user-select:none;touch-action:none}
-.bn-glass{position:absolute;top:6px;bottom:6px;left:0;width:60px;border-radius:100px;pointer-events:none;
+/* Kabarcık simgelerin ÜSTÜNDE durur (su damlası gibi): hafif tonlar, kenarında halka şeklinde
+   maskelenmiş bulanıklık — damlanın bittiği yerdeki kırılma hissi. */
+.bn-glass{position:absolute;top:6px;bottom:6px;left:0;width:60px;border-radius:100px;pointer-events:none;z-index:2;
   background:var(--glass-bubble);border:1px solid var(--glass-bubble-bor);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
   transform-origin:center;
   transition:transform .42s cubic-bezier(.34,1.45,.45,1),width .42s cubic-bezier(.34,1.45,.45,1),background .2s,box-shadow .2s}
 .bn-glass.no-anim{transition:none}
-/* sürüklerken: büyüyen mercek + hafif renkli kenar */
+/* kenar halkası: sadece damlanın kenarında bulanıklık (merkez net kalır) */
+.bn-glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  -webkit-backdrop-filter:blur(2.2px) saturate(115%);backdrop-filter:blur(2.2px) saturate(115%);
+  -webkit-mask:radial-gradient(ellipse closest-side at center,transparent 58%,#000 100%);
+  mask:radial-gradient(ellipse closest-side at center,transparent 58%,#000 100%)}
+/* sürüklerken: büyüyen mercek + daha belirgin kenar + hafif renkli kırılma */
 .bn-glass.lens{background:rgba(255,255,255,.15);transition:background .15s,box-shadow .15s;
   box-shadow:0 10px 26px -8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.28)}
+.bn-glass.lens::before{-webkit-backdrop-filter:blur(3.5px) saturate(125%);backdrop-filter:blur(3.5px) saturate(125%)}
 .bn-glass::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;opacity:0;transition:opacity .2s;
-  background:conic-gradient(from 210deg,rgba(61,220,132,0),rgba(120,200,255,.55),rgba(245,200,66,.45),rgba(255,120,200,.45),rgba(61,220,132,0));
+  background:conic-gradient(from 210deg,rgba(61,220,132,0),rgba(120,200,255,.5),rgba(245,200,66,.4),rgba(255,120,200,.4),rgba(61,220,132,0));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .bn-glass.lens::after{opacity:1}
 .bn-item{flex:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 2px;min-height:48px;background:none;border:none;border-radius:100px;color:var(--mut-strong);cursor:pointer;font-family:inherit;transition:color .15s}
+/* simge+yazı, damlanın altındayken büyür (JS mesafeye göre sürekli ölçekler) */
+.bn-item .bn-icon,.bn-item .bn-label{transition:transform .22s cubic-bezier(.34,1.3,.45,1)}
+.bottom-nav.dragging .bn-item .bn-icon,.bottom-nav.dragging .bn-item .bn-label{transition:transform .06s linear}
+.bn-item.on .bn-icon,.bn-item.on .bn-label{transform:scale(1.08)}
 .bn-item.on,.bn-item.hover{color:var(--grn)}
 .bn-icon{width:22px;height:22px;flex-shrink:0}
 .bn-icon svg{width:100%;height:100%;display:block}
@@ -1532,6 +1544,19 @@ function initNavGlass(){
     navItems().forEach((el,i)=>{ const c=el.offsetLeft+el.offsetWidth/2; const d=Math.abs(c-x); if(d<bd){bd=d;best=i;} });
     return best;
   };
+  /* Damla altındaki simge+yazıyı merkeze yakınlığa göre büyüt (1.0 → 1.22) */
+  const magnify=(items,c)=>{
+    const w=items[0].offsetWidth;
+    items.forEach(el=>{
+      const d=Math.abs(el.offsetLeft+w/2-c);
+      const s=1+0.22*Math.max(0,1-d/(w*0.95));
+      const t=s>1.005?'scale('+s.toFixed(3)+')':'';
+      el.querySelector('.bn-icon').style.transform=t;
+      el.querySelector('.bn-label').style.transform=t;
+    });
+  };
+  const clearMagnify=()=>navItems().forEach(el=>{ el.querySelector('.bn-icon').style.transform=''; el.querySelector('.bn-label').style.transform=''; });
+
   const follow=x=>{
     const items=navItems();
     const w=items[0].offsetWidth;
@@ -1541,13 +1566,14 @@ function initNavGlass(){
     glass.style.transform='translate3d('+(c-w/2)+'px,0,0) scale(1.12)';
     const n=nearest(c);
     items.forEach((el,i)=>el.classList.toggle('hover', i===n && !el.classList.contains('on')));
+    magnify(items,c);
   };
   const relX=e=>e.touches[0].clientX-nav.getBoundingClientRect().left;
 
   nav.addEventListener('touchstart', e=>{
     if(e.touches.length!==1) return;
     active=true; moved=false; startX=relX(e);
-    glass.classList.add('lens'); glass.classList.add('no-anim');
+    glass.classList.add('lens'); glass.classList.add('no-anim'); nav.classList.add('dragging');
     follow(startX);
   }, {passive:true});
 
@@ -1561,8 +1587,9 @@ function initNavGlass(){
 
   const end=e=>{
     if(!active) return; active=false;
-    glass.classList.remove('lens'); glass.classList.remove('no-anim');
+    glass.classList.remove('lens'); glass.classList.remove('no-anim'); nav.classList.remove('dragging');
     navItems().forEach(el=>el.classList.remove('hover'));
+    clearMagnify(); // .on kuralı (1.08) devreye girer, diğerleri yaylanarak 1'e iner
     if(moved){
       if(e.cancelable) e.preventDefault(); // sürüklendiyse click tetiklenmesin
       const x=e.changedTouches[0].clientX-nav.getBoundingClientRect().left;
