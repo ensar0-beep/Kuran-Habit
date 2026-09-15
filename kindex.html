@@ -444,7 +444,14 @@ input[type=range].pgslider::-moz-range-thumb{
 .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bor);margin:-6px auto 16px;touch-action:none}
 /* Lastik gibi geri dönen (hafif zıplayan) esneklik: hem kapanmayan sürüklemeler
    hem de yukarı çekişteki direnç bu eğriyle yerine oturur. */
-#ayet-sheet{transition:transform .32s cubic-bezier(.34,1.56,.64,1);max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+/* Sürüklenen/kayan kısım #ayet-sheet — kendi overflow'u yok (kırpmıyor) ki aşağıdaki
+   ::after "tampon" görünür kalsın. Asıl içerik kaydırması ayrı bir iç sarmalayıcıda
+   (#ayet-scroll), böylece dışarıdaki transform onu kırpmaz. */
+#ayet-sheet{transition:transform .32s cubic-bezier(.34,1.56,.64,1);position:relative}
+/* Yukarı çekişte sheet ekranın altından kalkınca altında boşluk/karartma görünmesin diye
+   aynı zemin rengini ekranın dışına, görünmeyen bir tampon kadar uzatıyoruz. */
+#ayet-sheet::after{content:"";position:absolute;left:0;right:0;top:100%;height:120px;background:var(--sur)}
+#ayet-scroll{max-height:68vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #ayet-sheet.dragging{transition:none}
 .modal-date{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .modal-title{font-size:17px;font-weight:700;margin-bottom:18px}
@@ -508,14 +515,16 @@ input[type=range].pgslider::-moz-range-thumb{
 <div class="modal-bg" id="ayet-modal" onclick="if(event.target===this)closeAyetModal()">
   <div class="modal ayet-modal-inner" id="ayet-sheet">
     <div class="sheet-handle" id="ayet-handle"></div>
-    <div class="ayet-sure-lbl" id="ayet-sure-lbl">—</div>
-    <div class="ayet-loading" id="ayet-loading">Ayet yükleniyor…</div>
-    <div class="ayet-content" id="ayet-content" style="display:none">
-      <div class="ayet-arabic" id="ayet-arabic"></div>
-      <div class="ayet-meal" id="ayet-meal"></div>
-      <div class="ayet-source">Diyanet İşleri Başkanlığı Meali</div>
+    <div class="ayet-scroll" id="ayet-scroll">
+      <div class="ayet-sure-lbl" id="ayet-sure-lbl">—</div>
+      <div class="ayet-loading" id="ayet-loading">Ayet yükleniyor…</div>
+      <div class="ayet-content" id="ayet-content" style="display:none">
+        <div class="ayet-arabic" id="ayet-arabic"></div>
+        <div class="ayet-meal" id="ayet-meal"></div>
+        <div class="ayet-source">Diyanet İşleri Başkanlığı Meali</div>
+      </div>
+      <div class="ayet-error" id="ayet-error" style="display:none">Ayet şu an yüklenemedi. İnternet bağlantını kontrol et.</div>
     </div>
-    <div class="ayet-error" id="ayet-error" style="display:none">Ayet şu an yüklenemedi. İnternet bağlantını kontrol et.</div>
   </div>
 </div>
 
@@ -1024,7 +1033,8 @@ function closeAyetModal(){
    çekiş, içerik zaten en alttaysa (ya da kaydıracak bir şey yoksa) lastik gibi
    dirençli hafif bir esneme gösterip bırakınca yaylanarak yerine döner. */
 function initAyetSheetDrag(){
-  const sheet=document.getElementById('ayet-sheet');
+  const sheet=document.getElementById('ayet-sheet'); // sürüklenen/taşınan kısım (transform burada)
+  const scroller=document.getElementById('ayet-scroll'); // içerik kaydırması burada, ayrı
   let startY=0, dy=0, dragging=false, mode=null; // mode: null|'down'|'up'|'scroll'
   const UP_DAMP=0.35, CLOSE_AT=90;
 
@@ -1039,8 +1049,8 @@ function initAyetSheetDrag(){
 
     if(mode===null){
       if(Math.abs(raw)<6) return; // ufak titremeleri yut
-      const atTop = sheet.scrollTop<=0;
-      const atBottom = sheet.scrollHeight-sheet.clientHeight-sheet.scrollTop<=1;
+      const atTop = scroller.scrollTop<=0;
+      const atBottom = scroller.scrollHeight-scroller.clientHeight-scroller.scrollTop<=1;
       if(raw>0 && atTop) mode='down';
       else if(raw<0 && atBottom) mode='up';
       else mode='scroll';
