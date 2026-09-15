@@ -441,6 +441,9 @@ input[type=range].pgslider::-moz-range-thumb{
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
 .modal-bg.on{display:flex}
 .modal{background:var(--sur);border-radius:var(--r) var(--r) 0 0;padding:22px 20px 32px;width:100%;max-width:480px}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bor);margin:-6px auto 16px;touch-action:none}
+#ayet-sheet{transition:transform .28s cubic-bezier(.22,.8,.3,1)}
+#ayet-sheet.dragging{transition:none}
 .modal-date{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .modal-title{font-size:17px;font-weight:700;margin-bottom:18px}
 .modal-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
@@ -501,7 +504,8 @@ input[type=range].pgslider::-moz-range-thumb{
 <!-- EDIT MODAL -->
 <!-- AYET MEALİ MODAL -->
 <div class="modal-bg" id="ayet-modal" onclick="if(event.target===this)closeAyetModal()">
-  <div class="modal ayet-modal-inner">
+  <div class="modal ayet-modal-inner" id="ayet-sheet">
+    <div class="sheet-handle" id="ayet-handle"></div>
     <div class="ayet-sure-lbl" id="ayet-sure-lbl">—</div>
     <div class="ayet-loading" id="ayet-loading">Ayet yükleniyor…</div>
     <div class="ayet-content" id="ayet-content" style="display:none">
@@ -1012,6 +1016,38 @@ function closeAyetModal(){
   unlockBodyScroll();
 }
 
+/* Ayet sheet'ini tutamaçtan (ya da başlıktan) aşağı sürükleyerek kapatma */
+function initAyetSheetDrag(){
+  const sheet=document.getElementById('ayet-sheet');
+  const grips=[document.getElementById('ayet-handle'), document.getElementById('ayet-sure-lbl')];
+  let startY=0, dy=0, dragging=false;
+
+  grips.forEach(grip=>{
+    grip.addEventListener('touchstart', e=>{
+      if(e.touches.length!==1) return;
+      startY=e.touches[0].clientY; dy=0; dragging=true;
+      sheet.classList.add('dragging');
+    }, {passive:true});
+  });
+
+  sheet.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    dy=Math.max(0, e.touches[0].clientY-startY);
+    if(e.cancelable) e.preventDefault();
+    sheet.style.transform='translateY('+dy+'px)';
+  }, {passive:false});
+
+  const end=()=>{
+    if(!dragging) return;
+    dragging=false;
+    sheet.classList.remove('dragging');
+    sheet.style.transform='';
+    if(dy>90) closeAyetModal();
+  };
+  sheet.addEventListener('touchend', end, {passive:true});
+  sheet.addEventListener('touchcancel', end, {passive:true});
+}
+
 /* ══════════════════════════════
    YARDIMCI
 ══════════════════════════════ */
@@ -1226,7 +1262,7 @@ function enterApp(){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app').style.display='';
   showApp();
-  if(!swipeInitialized){ initSwipe(); initNavGlass(); initStatScrub(); swipeInitialized=true; }
+  if(!swipeInitialized){ initSwipe(); initNavGlass(); initStatScrub(); initAyetSheetDrag(); swipeInitialized=true; }
   positionGlass(true);
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>positionGlass(true)); // font gelince genişlik değişebilir
   window.scrollTo(0,0);
