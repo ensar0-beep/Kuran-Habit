@@ -977,6 +977,7 @@ async function openAyetModal(){
   if(!p){ return; }
 
   document.getElementById('ayet-modal').classList.add('on');
+  lockBodyScroll();
   document.getElementById('ayet-sure-lbl').textContent='Sayfa '+p+' yükleniyor…';
   document.getElementById('ayet-loading').style.display='';
   document.getElementById('ayet-content').style.display='none';
@@ -1009,6 +1010,7 @@ async function openAyetModal(){
 
 function closeAyetModal(){
   document.getElementById('ayet-modal').classList.remove('on');
+  unlockBodyScroll();
 }
 
 /* ══════════════════════════════
@@ -1046,6 +1048,33 @@ async function hashPassword(pw){
   const enc=new TextEncoder().encode(pw);
   const buf=await crypto.subtle.digest('SHA-256', enc);
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ══════════════════════════════
+   MODAL AÇIKKEN ARKA PLANIN KAYMASINI ENGELLE
+   (iOS Safari'de position:fixed tek başına yetmiyor; body'yi de sabitleyip
+   scroll konumunu saklayıp kapanışta geri koyuyoruz. Sayaç: modal modal
+   üstüne açılabildiği için sadece 0→1 ve 1→0 geçişinde uygulanır.) */
+let bodyLockCount=0, bodyLockY=0;
+function lockBodyScroll(){
+  if(bodyLockCount===0){
+    bodyLockY=window.scrollY;
+    document.body.style.position='fixed';
+    document.body.style.top=(-bodyLockY)+'px';
+    document.body.style.left='0';
+    document.body.style.right='0';
+  }
+  bodyLockCount++;
+}
+function unlockBodyScroll(){
+  bodyLockCount=Math.max(0,bodyLockCount-1);
+  if(bodyLockCount===0){
+    document.body.style.position='';
+    document.body.style.top='';
+    document.body.style.left='';
+    document.body.style.right='';
+    window.scrollTo(0,bodyLockY);
+  }
 }
 
 /* ══════════════════════════════
@@ -1221,6 +1250,7 @@ function openProfileMenu(){
   syncThemeButtons();
   syncAvatarSwatches();
   document.getElementById('profile-modal').classList.add('on');
+  lockBodyScroll();
 }
 
 function setAvatar(id){
@@ -1237,6 +1267,7 @@ function syncAvatarSwatches(){
 }
 function closeProfileMenu(){
   document.getElementById('profile-modal').classList.remove('on');
+  unlockBodyScroll();
 }
 
 /* ══════════════════════════════
@@ -1952,11 +1983,13 @@ function openPageSheet(){
   const inp=document.getElementById('loc-manual-input');
   inp.value=S.currentPage||'';
   document.getElementById('page-modal').classList.add('on');
+  lockBodyScroll();
   setTimeout(()=>{ inp.focus(); inp.select&&inp.select(); },50);
 }
 function closePageSheet(){
   document.getElementById('page-modal').classList.remove('on');
   document.getElementById('loc-manual-input').blur();
+  unlockBodyScroll();
 }
 
 /* 30 cüzlük ray: geçilen cüzler yeşil, içinde olunan altın */
@@ -2285,11 +2318,13 @@ function initStatScrub(){
 ══════════════════════════════ */
 function openCalendarModal(){
   document.getElementById('calendar-modal').classList.add('on');
+  lockBodyScroll();
   renderCal();
 }
 
 function closeCalendarModal(){
   document.getElementById('calendar-modal').classList.remove('on');
+  unlockBodyScroll();
 }
 
 /* ══════════════════════════════
@@ -2426,10 +2461,12 @@ function openEdit(ds){
     else { document.getElementById('modal-pgslider').value=existing.pages; onModalSlider(existing.pages); }
   } else { onModalSlider(1); }
   document.getElementById('edit-modal').classList.add('on');
+  lockBodyScroll();
 }
 
 function closeEdit(){
   document.getElementById('edit-modal').classList.remove('on');
+  unlockBodyScroll();
   editDate=null; editSel=null;
 }
 
