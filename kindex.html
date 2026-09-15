@@ -442,7 +442,9 @@ input[type=range].pgslider::-moz-range-thumb{
 .modal-bg.on{display:flex}
 .modal{background:var(--sur);border-radius:var(--r) var(--r) 0 0;padding:22px 20px 32px;width:100%;max-width:480px}
 .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bor);margin:-6px auto 16px;touch-action:none}
-#ayet-sheet{transition:transform .28s cubic-bezier(.22,.8,.3,1)}
+/* Lastik gibi geri dönen (hafif zıplayan) esneklik: hem kapanmayan sürüklemeler
+   hem de yukarı çekişteki direnç bu eğriyle yerine oturur. */
+#ayet-sheet{transition:transform .32s cubic-bezier(.34,1.56,.64,1);max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #ayet-sheet.dragging{transition:none}
 .modal-date{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .modal-title{font-size:17px;font-weight:700;margin-bottom:18px}
@@ -1017,32 +1019,47 @@ function closeAyetModal(){
 }
 
 /* Ayet sheet'ini tutamaçtan (ya da başlıktan) aşağı sürükleyerek kapatma */
+/* Sheet'in HERHANGİ bir yerinden tutulabilir. Aşağı çekiş, içerik zaten en
+   üstteyse sheet'i sürükler (aksi halde normal scroll'a bırakılır); yukarı
+   çekiş, içerik zaten en alttaysa (ya da kaydıracak bir şey yoksa) lastik gibi
+   dirençli hafif bir esneme gösterip bırakınca yaylanarak yerine döner. */
 function initAyetSheetDrag(){
   const sheet=document.getElementById('ayet-sheet');
-  const grips=[document.getElementById('ayet-handle'), document.getElementById('ayet-sure-lbl')];
-  let startY=0, dy=0, dragging=false;
+  let startY=0, dy=0, dragging=false, mode=null; // mode: null|'down'|'up'|'scroll'
+  const UP_DAMP=0.35, CLOSE_AT=90;
 
-  grips.forEach(grip=>{
-    grip.addEventListener('touchstart', e=>{
-      if(e.touches.length!==1) return;
-      startY=e.touches[0].clientY; dy=0; dragging=true;
-      sheet.classList.add('dragging');
-    }, {passive:true});
-  });
+  sheet.addEventListener('touchstart', e=>{
+    if(e.touches.length!==1) return;
+    startY=e.touches[0].clientY; dy=0; dragging=true; mode=null;
+  }, {passive:true});
 
   sheet.addEventListener('touchmove', e=>{
     if(!dragging) return;
-    dy=Math.max(0, e.touches[0].clientY-startY);
+    const raw=e.touches[0].clientY-startY;
+
+    if(mode===null){
+      if(Math.abs(raw)<6) return; // ufak titremeleri yut
+      const atTop = sheet.scrollTop<=0;
+      const atBottom = sheet.scrollHeight-sheet.clientHeight-sheet.scrollTop<=1;
+      if(raw>0 && atTop) mode='down';
+      else if(raw<0 && atBottom) mode='up';
+      else mode='scroll';
+      if(mode!=='scroll') sheet.classList.add('dragging');
+    }
+    if(mode==='scroll') return; // içerik kendi kaydırmasını yapsın
+
     if(e.cancelable) e.preventDefault();
-    sheet.style.transform='translateY('+dy+'px)';
+    dy=raw;
+    sheet.style.transform='translateY('+(dy>0?dy:dy*UP_DAMP)+'px)';
   }, {passive:false});
 
   const end=()=>{
     if(!dragging) return;
     dragging=false;
     sheet.classList.remove('dragging');
-    sheet.style.transform='';
-    if(dy>90) closeAyetModal();
+    if(mode==='down' && dy>CLOSE_AT){ closeAyetModal(); mode=null; return; }
+    sheet.style.transform=''; // bouncy transition yerine yaylandırır
+    mode=null;
   };
   sheet.addEventListener('touchend', end, {passive:true});
   sheet.addEventListener('touchcancel', end, {passive:true});
