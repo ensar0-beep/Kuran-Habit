@@ -500,7 +500,7 @@ input[type=range].pgslider::-moz-range-thumb{
 
 <!-- EDIT MODAL -->
 <!-- AYET MEALİ MODAL -->
-<div class="modal-bg" id="ayet-modal">
+<div class="modal-bg" id="ayet-modal" onclick="if(event.target===this)closeAyetModal()">
   <div class="modal ayet-modal-inner">
     <div class="ayet-sure-lbl" id="ayet-sure-lbl">—</div>
     <div class="ayet-loading" id="ayet-loading">Ayet yükleniyor…</div>
@@ -510,7 +510,6 @@ input[type=range].pgslider::-moz-range-thumb{
       <div class="ayet-source">Diyanet İşleri Başkanlığı Meali</div>
     </div>
     <div class="ayet-error" id="ayet-error" style="display:none">Ayet şu an yüklenemedi. İnternet bağlantını kontrol et.</div>
-    <button class="btn-cancel" style="width:100%;margin-top:14px" onclick="closeAyetModal()">Kapat</button>
   </div>
 </div>
 
