@@ -18,7 +18,7 @@
   --gold:#F5C842; --gold-dim:#2A2010; --red:#FF5C5C; --red-dim:#3A1A1A;
   --r:14px; --rs:10px;
   /* yüzen cam alt bar */
-  --glass-bg:rgba(30,37,48,.72); --glass-bor:rgba(255,255,255,.08); --glass-hi:rgba(255,255,255,.06);
+  --glass-bg:rgba(30,37,48,.52); --glass-bor:rgba(255,255,255,.09); --glass-hi:rgba(255,255,255,.07);
   --glass-bubble:rgba(255,255,255,.10); --glass-bubble-bor:rgba(255,255,255,.12);
 }
 /* AÇIK MOD — aynı token adları, tersine çevrilmiş palet */
@@ -27,7 +27,7 @@
   --grn:#16A34A; --grn-dim:#E3F6EA; --grn-txt:#16A34A;
   --txt:#151A17; --mut:#5B655F; --mut2:#8B958E; --mut-strong:#424A45;
   --gold:#B45309; --gold-dim:#FCF1DC; --red:#DC2626; --red-dim:#FCEAEA;
-  --glass-bg:rgba(255,255,255,.74); --glass-bor:rgba(0,0,0,.07); --glass-hi:rgba(255,255,255,.9);
+  --glass-bg:rgba(255,255,255,.55); --glass-bor:rgba(0,0,0,.08); --glass-hi:rgba(255,255,255,.9);
   --glass-bubble:rgba(0,0,0,.07); --glass-bubble-bor:rgba(0,0,0,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -119,7 +119,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bottom-nav{position:fixed;left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;
   display:flex;align-items:stretch;padding:6px;border-radius:100px;
   background:var(--glass-bg);
-  -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);backdrop-filter:blur(28px) saturate(160%);
   border:1px solid var(--glass-bor);
   box-shadow:0 14px 34px -10px rgba(0,0,0,.55),inset 0 1px 0 var(--glass-hi);
   -webkit-user-select:none;user-select:none;touch-action:none}
@@ -128,16 +128,20 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bn-glass{position:absolute;top:6px;bottom:6px;left:0;width:60px;border-radius:100px;pointer-events:none;z-index:2;
   background:var(--glass-bubble);border:1px solid var(--glass-bubble-bor);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
-  transform-origin:center;
-  transition:transform .42s cubic-bezier(.34,1.45,.45,1),width .42s cubic-bezier(.34,1.45,.45,1),background .2s,box-shadow .2s}
-.bn-glass.no-anim{transition:none}
+  /* transform/width: parmağı anlık takip etsin (gecikme olmasın).
+     top/bottom: basılı tutunca rayın dışına taşarken kendi hızında, hafif gecikmeli
+     "yayılma" hissi versin — ikisi ayrı zamanlamalarda. */
+  transition:transform .42s cubic-bezier(.34,1.45,.45,1),width .42s cubic-bezier(.34,1.45,.45,1),
+    top .2s cubic-bezier(.22,.8,.3,1),bottom .2s cubic-bezier(.22,.8,.3,1),background .2s,box-shadow .2s}
+.bn-glass.no-anim{transition:top .2s cubic-bezier(.22,.8,.3,1),bottom .2s cubic-bezier(.22,.8,.3,1),background .2s,box-shadow .2s}
 /* kenar halkası: sadece damlanın kenarında bulanıklık (merkez net kalır) */
 .bn-glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   -webkit-backdrop-filter:blur(2.2px) saturate(115%);backdrop-filter:blur(2.2px) saturate(115%);
   -webkit-mask:radial-gradient(ellipse closest-side at center,transparent 58%,#000 100%);
   mask:radial-gradient(ellipse closest-side at center,transparent 58%,#000 100%)}
-/* sürüklerken: büyüyen mercek + daha belirgin kenar + hafif renkli kırılma */
-.bn-glass.lens{background:rgba(255,255,255,.15);transition:background .15s,box-shadow .15s;
+/* sürüklerken/basılıyken: rayın üstünden/altından taşan, büyüyen bir damla — genişlik ve
+   konum JS'den (parmağı anlık takip eder), düşey taşma buradan (kontrollü, ~4px) */
+.bn-glass.lens{background:rgba(255,255,255,.15);top:-4px;bottom:-4px;
   box-shadow:0 10px 26px -8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.28)}
 .bn-glass.lens::before{-webkit-backdrop-filter:blur(3.5px) saturate(125%);backdrop-filter:blur(3.5px) saturate(125%)}
 .bn-glass::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;opacity:0;transition:opacity .2s;
@@ -1721,10 +1725,11 @@ function initNavGlass(){
   const follow=x=>{
     const items=navItems();
     const w=items[0].offsetWidth;
+    const gw=w*1.12; // basılıyken hap biraz daha geniş (gerçek kutu boyutu, transform:scale değil)
     const minC=items[0].offsetLeft+w/2, maxC=items[items.length-1].offsetLeft+w/2;
     const c=Math.max(minC,Math.min(maxC,x));
-    glass.style.width=w+'px';
-    glass.style.transform='translate3d('+(c-w/2)+'px,0,0) scale(1.12)';
+    glass.style.width=gw+'px';
+    glass.style.transform='translate3d('+(c-gw/2)+'px,0,0)';
     const n=nearest(c);
     items.forEach((el,i)=>el.classList.toggle('hover', i===n && !el.classList.contains('on')));
     magnify(items,c);
