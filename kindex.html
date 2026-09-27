@@ -172,6 +172,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .pm-theme-btn.on{background:var(--grn);color:#06130C}
 .pm-avatar-block{flex-direction:column;align-items:stretch;gap:10px;cursor:default}
 .pm-avatar-picker{display:flex;gap:10px;flex-wrap:wrap}
+.pm-notify-block{flex-direction:column;align-items:stretch;gap:8px;cursor:default}
+.pm-notify-row{display:flex;align-items:center;justify-content:space-between}
+.pm-notify-sub{font-size:11px;color:var(--mut);line-height:1.5}
+.pm-notify-sub.warn{color:var(--gold)}
 .pm-av-swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;flex-shrink:0}
 .pm-av-swatch.sel{border-color:var(--txt)}
 
@@ -849,9 +853,16 @@ input[type=range].pgslider::-moz-range-thumb{
     <button class="profile-menu-item" onclick="closeProfileMenu();switchTab('grup')">
       <span>Grup</span>
     </button>
-    <button class="profile-menu-item disabled" disabled>
-      <span>Bildirimler</span><span class="pm-badge">Yakında</span>
-    </button>
+    <div class="profile-menu-item pm-notify-block">
+      <div class="pm-notify-row">
+        <span>Bildirimler</span>
+        <div class="pm-theme-switch">
+          <button class="pm-theme-btn" id="notify-btn-off" onclick="setNotifyPref(false)">Kapalı</button>
+          <button class="pm-theme-btn" id="notify-btn-on" onclick="setNotifyPref(true)">Açık</button>
+        </div>
+      </div>
+      <div class="pm-notify-sub" id="notify-sub">Saat 18:00'e kadar bugünkü hedefini tutturmazsan, uygulama açık ya da arka plandaysa hatırlatır.</div>
+    </div>
     <div class="profile-menu-item">
       <span>Görünüm</span>
       <div class="pm-theme-switch">
@@ -1315,6 +1326,7 @@ function openProfileMenu(){
   document.getElementById('pm-avatar').className='user-avatar profile-menu-avatar av-'+(S.avatarId||'1');
   syncThemeButtons();
   syncAvatarSwatches();
+  syncNotifyButtons();
   document.getElementById('profile-modal').classList.add('on');
   lockBodyScroll();
 }
@@ -1359,6 +1371,96 @@ function setTheme(mode){
   const saved=localStorage.getItem(THEME_KEY)||'dark';
   document.documentElement.setAttribute('data-theme', saved);
 })();
+
+/* ══════════════════════════════
+   BİLDİRİMLER — saat 18:00'e kadar hedef tutmadıysa hatırlatma
+   (sunucu yok: sadece uygulama açık/arka planda çalışırken işler; tarayıcı
+   sekmeyi/uygulamayı tamamen kapatırsa bu zamanlayıcı da kaybolur — bir
+   sonraki açılışta ya da sekmeye dönüşte yeniden kurulur.)
+══════════════════════════════ */
+const NOTIFY_KEY='kuran_notify';
+const NOTIFY_FIRED_KEY='kuran_notify_fired';
+const NOTIFY_HOUR=18;
+let notifyTimer=null;
+
+function notifySupported(){ return 'Notification' in window; }
+function notifyPref(){ return localStorage.getItem(NOTIFY_KEY)==='on'; }
+
+function syncNotifyButtons(){
+  const on=notifyPref();
+  document.getElementById('notify-btn-off').classList.toggle('on', !on);
+  document.getElementById('notify-btn-on').classList.toggle('on', on);
+  const sub=document.getElementById('notify-sub');
+  if(!notifySupported()){
+    sub.textContent='Bu tarayıcı bildirimi desteklemiyor. iPhone\'da: uygulamayı ana ekrana ekleyip oradan aç.';
+    sub.classList.add('warn');
+  } else if(on && Notification.permission==='denied'){
+    sub.textContent='Bildirim izni reddedilmiş. Açmak için tarayıcı/sistem ayarlarından bu site için bildirimlere izin ver.';
+    sub.classList.add('warn');
+  } else {
+    sub.textContent="Saat 18:00'e kadar bugünkü hedefini tutturmazsan, uygulama açık ya da arka plandaysa hatırlatır.";
+    sub.classList.remove('warn');
+  }
+}
+
+async function setNotifyPref(on){
+  if(!on){
+    localStorage.setItem(NOTIFY_KEY,'off');
+    clearNotifyTimer();
+    syncNotifyButtons();
+    return;
+  }
+  if(!notifySupported()){ syncNotifyButtons(); return; }
+  if(Notification.permission==='denied'){ syncNotifyButtons(); return; }
+  let perm=Notification.permission;
+  if(perm==='default'){ perm=await Notification.requestPermission(); }
+  if(perm==='granted'){
+    localStorage.setItem(NOTIFY_KEY,'on');
+    scheduleReminder();
+  } else {
+    localStorage.setItem(NOTIFY_KEY,'off');
+  }
+  syncNotifyButtons();
+}
+
+function clearNotifyTimer(){
+  if(notifyTimer){ clearTimeout(notifyTimer); notifyTimer=null; }
+}
+
+/* Bugün için hedefin tutmadığını bildirir; günde en fazla bir kez */
+function fireReminder(){
+  if(!S || S.todayLogged) return;
+  const today=todayStr();
+  if(localStorage.getItem(NOTIFY_FIRED_KEY)===today) return;
+  const lvl=LEVELS[S.levelIndex];
+  const entry=S.history.find(h=>h.date===today);
+  const pages=entry?(entry.pages||0):0;
+  const remaining=Math.max(0,lvl.pages-pages);
+  const body = pages>0
+    ? ('Bugün '+pages+'/'+lvl.pages+' sayfa okudun, '+remaining+' sayfa kaldı.')
+    : ('Bugün henüz okumadın — hedefin '+lvl.pages+' sayfa.');
+  try{
+    const n=new Notification('Kuran Takip', {body, tag:'kuran-daily-reminder'});
+    n.onclick=()=>{ window.focus(); n.close(); };
+  }catch(e){ /* bazı tarayıcılarda kurulum farklı olabilir, sessizce geç */ }
+  localStorage.setItem(NOTIFY_FIRED_KEY, today);
+}
+
+/* Bugün saat 18:00 için zamanlayıcı kurar (geçtiyse ve hâlâ okunmadıysa hemen tetikler) */
+function scheduleReminder(){
+  clearNotifyTimer();
+  if(!S || !notifyPref() || !notifySupported() || Notification.permission!=='granted') return;
+  if(S.todayLogged) return;
+  const now=new Date();
+  const target=new Date(); target.setHours(NOTIFY_HOUR,0,0,0);
+  const ms=target-now;
+  if(ms<=0){ fireReminder(); return; }
+  notifyTimer=setTimeout(fireReminder, ms);
+}
+
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible') scheduleReminder();
+});
 
 function doLogout(){
   clearSession();
@@ -2110,6 +2212,7 @@ function renderMe(){
   const lvl=LEVELS[S.levelIndex];
   document.getElementById('s-total').textContent=S.totalDays;
   document.getElementById('s-streak').textContent=getReadStreak();
+  scheduleReminder(); // bugünkü durum değişmiş olabilir (kaydedildi/düzenlendi) — hatırlatmayı buna göre ayarla
 
   const btn=document.getElementById('save-btn');
   const tc=document.getElementById('tc-title');
