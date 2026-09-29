@@ -57,8 +57,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .chain-lbl.active{font-size:11px;font-weight:700;color:var(--grn)}
 .chain-lbl-row{display:flex;justify-content:space-between;font-size:9px;font-weight:600;color:var(--mut2);margin-bottom:8px;padding:0 1px}
 .chain-card-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:14px}
+.chain-card-head{display:flex;align-items:center;justify-content:space-between}
+.chain-card-head .chain-card-title{margin-bottom:14px}
+.chain-settings-btn{width:30px;height:30px;flex-shrink:0;border-radius:50%;background:var(--sur2);border:1px solid var(--bor);color:var(--mut);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;margin-bottom:12px}
+.chain-settings-btn:active{background:var(--bor);color:var(--txt)}
 .chain-pos{font-size:12px;color:var(--mut);text-align:center;padding-top:2px}
 .chain-pos b{color:var(--grn)}
+
+/* AŞAMA DÜZENLEME */
+.lvl-edit-row{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 6px;background:var(--sur2);border:1px solid var(--bor);border-radius:12px;margin-bottom:8px}
+.lvl-edit-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.lvl-edit-move{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
+.lvl-edit-move button{width:18px;height:14px;border:none;background:transparent;color:var(--mut2);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0}
+.lvl-edit-move button:disabled{opacity:.25;cursor:default}
+.lvl-edit-name{flex-grow:1;min-width:0;padding:8px 8px;background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--txt);font-size:12.5px;font-family:inherit;font-weight:600}
+.lvl-edit-num{width:42px;flex-shrink:0;padding:8px 4px;text-align:center;background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--txt);font-size:12.5px;font-family:inherit;font-weight:600}
+.lvl-edit-del{width:28px;height:28px;flex-shrink:0;border:none;border-radius:8px;background:transparent;color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.lvl-edit-del:disabled{opacity:.25;cursor:default}
+.lvl-edit-labels{display:flex;gap:8px;padding:0 10px 0 44px;margin-bottom:4px}
+.lvl-edit-labels span{font-size:9px;color:var(--mut2);text-transform:uppercase;letter-spacing:.03em;width:42px;text-align:center;flex-shrink:0}
+.lvl-edit-labels span:first-child{flex-grow:1;width:auto;text-align:left;margin-right:0}
+.lvl-edit-add{width:100%;padding:12px;border:1.5px dashed var(--bor);border-radius:12px;background:transparent;color:var(--mut);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:14px}
+.lvl-edit-warn{display:flex;gap:10px;padding:12px 14px;background:var(--gold-dim);border:1px solid var(--gold);border-left-width:3px;border-radius:10px;font-size:11.5px;color:var(--mut-strong);line-height:1.55;margin-bottom:14px}
+.lvl-edit-warn svg{flex-shrink:0;margin-top:1px}
+.lvl-edit-err{font-size:12px;color:var(--red);margin:-6px 0 12px;min-height:1em}
 
 /* AUTH SCREEN */
 .auth-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
@@ -686,8 +708,13 @@ input[type=range].pgslider::-moz-range-thumb{
 
     <!-- Zincir görünümü -->
     <div class="chain-card">
-      <div class="chain-card-title">Yolculuk Zinciri</div>
-      <div class="chain-lbl-row"><span>1'ler</span><span>Hatim</span></div>
+      <div class="chain-card-head">
+        <div class="chain-card-title">Yolculuk Zinciri</div>
+        <button class="chain-settings-btn" onclick="openLevelsEdit()" aria-label="Aşamaları düzenle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .33-1.82 1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.82.33H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.33 1.82V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+        </button>
+      </div>
+      <div class="chain-lbl-row"><span id="chain-lbl-first">1'ler</span><span id="chain-lbl-last">Hatim</span></div>
       <div class="chain-track" id="chain-track"></div>
       <div class="chain-labels" id="chain-labels"></div>
       <div class="chain-pos" id="chain-pos"></div>
@@ -827,6 +854,28 @@ input[type=range].pgslider::-moz-range-thumb{
   </div>
 </div>
 
+<!-- AŞAMALARI DÜZENLE -->
+<div class="modal-bg" id="levels-edit-modal">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="modal-title">Aşamaları Düzenle</div>
+    <div class="lvl-edit-warn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+      <span>Kaydettiğinde geçmiş günlerin de yeni hedeflere göre yeniden değerlendirilir; aşaman/serin anında değişebilir.</span>
+    </div>
+    <div class="lvl-edit-labels"><span>Aşama adı</span><span>Sayfa</span><span>Gün</span></div>
+    <div id="lvl-edit-list"></div>
+    <button class="lvl-edit-add" onclick="addEditLevel()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Yeni aşama ekle
+    </button>
+    <div class="lvl-edit-err" id="lvl-edit-err"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeLevelsEdit()">İptal</button>
+      <button class="btn-save-modal" onclick="saveLevelsEdit()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
 <!-- PROFİL / AYARLAR MENÜSÜ -->
 <div class="modal-bg" id="profile-modal">
   <div class="modal">
@@ -889,14 +938,25 @@ const DAYS_TR  = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
 const MONTHS_TR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const DAYS_LONG = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 
-const LEVELS = [
-  {pages:1,  days:2,  label:'1\'ler — günde 1 sayfa',   next:3},
-  {pages:3,  days:3,  label:'3\'ler — günde 3 sayfa',   next:5},
-  {pages:5,  days:5,  label:'5\'ler — günde 5 sayfa',   next:10},
-  {pages:10, days:10, label:'10\'lar — günde 10 sayfa', next:20},
-  {pages:20, days:20, label:'20\'ler — günde 1 cüz',    next:20},
-  {pages:20, days:30, label:'Aylık Hatim — 20×30',   next:null},
+/* Varsayılan aşama tablosu — yeni kullanıcılar bununla başlar, herkes kendi S.levels'ını düzenleyebilir */
+const DEFAULT_LVLS = [
+  {name:'1\'ler',       pages:1,  days:2},
+  {name:'3\'ler',       pages:3,  days:3},
+  {name:'5\'ler',       pages:5,  days:5},
+  {name:'10\'lar',      pages:10, days:10},
+  {name:'20\'ler',      pages:20, days:20},
+  {name:'Aylık Hatim',  pages:20, days:30},
 ];
+/* Kullanıcının aktif aşama tablosu: özelleştirilmişse S.levels, değilse varsayılan */
+function curLevels(){
+  return (S && S.levels && S.levels.length) ? S.levels : DEFAULT_LVLS;
+}
+/* Aşama listesinde tam açıklama metni ("1'ler — günde 1 sayfa") */
+function stageDesc(lvl){ return escHtml(lvl.name)+' — günde '+lvl.pages+' sayfa'; }
+/* Kullanıcının yazdığı aşama adı innerHTML'e güvenle basılsın diye */
+function escHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* Zincir rengi: aşama sayısı 6'yı geçerse renk paleti baştan döner */
+function chainColorAt(i){ const t=chainColorsTable(); return t[i % t.length]; }
 
 /* Kuran sure tablosu: [sure_adı, başlangıç_sayfası] */
 const SURELER = [
@@ -1160,7 +1220,7 @@ function unlockBodyScroll(){
 let S=null, sel=null;
 
 function freshState(name){
-  return {name,levelIndex:0,streak:0,totalDays:0,history:[],todayLogged:false,todayDate:null,currentPage:null,groupCode:null,avatarId:'1'};
+  return {name,levelIndex:0,streak:0,totalDays:0,history:[],todayLogged:false,todayDate:null,currentPage:null,groupCode:null,avatarId:'1',levels:DEFAULT_LVLS.map(l=>({...l}))};
 }
 function loadLocal(){try{const r=localStorage.getItem(LOCAL_KEY);return r?JSON.parse(r):null}catch(e){return null}}
 function saveLocal(){localStorage.setItem(LOCAL_KEY,JSON.stringify(S))}
@@ -1219,6 +1279,7 @@ async function handleRegister(){
       S.totalDays=legacy.totalDays??0;
       S.currentPage=legacy.currentPage||null;
       S.history=legacy.history14||[];
+      if(legacy.levels && legacy.levels.length) S.levels=legacy.levels;
       S.todayDate=todayStr();
       if(!S.history.find(h=>h.date===todayStr())) S.todayLogged=false;
       recalcAll();
@@ -1270,6 +1331,7 @@ async function loadUserData(name){
   const saved=loadLocal();
   S=(saved&&saved.name===name)?saved:freshState(name);
   if(!S.avatarId) S.avatarId='1';
+  if(!S.levels || !S.levels.length) S.levels=DEFAULT_LVLS.map(l=>({...l}));
   if(S.todayDate!==todayStr()){S.todayLogged=false;S.todayDate=todayStr();}
   saveLocal();
   try{
@@ -1281,6 +1343,7 @@ async function loadUserData(name){
       if(remote.currentPage) S.currentPage=remote.currentPage;
       if(remote.groupCode) S.groupCode=remote.groupCode;
       if(remote.avatarId) S.avatarId=remote.avatarId;
+      if(remote.levels && remote.levels.length) S.levels=remote.levels;
       if(!S.todayLogged&&remote.todayLogged&&remote.todayDate===todayStr()){
         S.todayLogged=true;S.todayDate=todayStr();
       }
@@ -1432,7 +1495,7 @@ function fireReminder(){
   if(!S || S.todayLogged) return;
   const today=todayStr();
   if(localStorage.getItem(NOTIFY_FIRED_KEY)===today) return;
-  const lvl=LEVELS[S.levelIndex];
+  const lvl=curLevels()[S.levelIndex];
   const entry=S.history.find(h=>h.date===today);
   const pages=entry?(entry.pages||0):0;
   const remaining=Math.max(0,lvl.pages-pages);
@@ -1530,6 +1593,7 @@ function syncToFb(){
     totalDays:S.totalDays,todayLogged:S.todayLogged,todayDate:S.todayDate,
     currentPage:S.currentPage||null,groupCode:S.groupCode||null,avatarId:S.avatarId||'1',updatedAt:Date.now(),
     history14:S.history, // tüm geçmiş buluta yedeklenir (isim tarihsel kalma nedeniyle "history14")
+    levels:curLevels(), // grup üyeleri birbirinin aşama adını/ilerlemesini doğru gösterebilsin diye
   });
 }
 
@@ -1633,30 +1697,29 @@ async function loadGroupTab(){
   renderGroupTab();
 }
 
-function getTotalChainDay(levelIndex, streak){
-  const doneDays=LEVELS.slice(0,levelIndex).reduce((a,l)=>a+l.days,0)+streak;
-  const totalDays=LEVELS.reduce((a,l)=>a+l.days,0);
+function getTotalChainDay(levels, levelIndex, streak){
+  const doneDays=levels.slice(0,levelIndex).reduce((a,l)=>a+l.days,0)+streak;
+  const totalDays=levels.reduce((a,l)=>a+l.days,0);
   return {doneDays, totalDays};
 }
 
-function totalChainDayHTML(levelIndex, streak){
-  const {doneDays,totalDays}=getTotalChainDay(levelIndex,streak);
+function totalChainDayHTML(levels, levelIndex, streak){
+  const {doneDays,totalDays}=getTotalChainDay(levels, levelIndex,streak);
   const chainColors=chainColorsTable();
-  const color=chainColors[Math.min(levelIndex,chainColors.length-1)];
+  const color=chainColors[Math.min(levelIndex,chainColors.length-1)%chainColors.length];
   return `<span style="color:${color};font-size:18px;font-weight:700">${doneDays}</span><span style="color:${color};font-size:11px;font-weight:600;opacity:.75">/${totalDays}</span>`;
 }
 
-function miniChainHTML(levelIndex, streak){
-  const totalDays=LEVELS.reduce((a,l)=>a+l.days,0);
+function miniChainHTML(levels, levelIndex, streak){
+  const totalDays=levels.reduce((a,l)=>a+l.days,0);
   let segs='';
-  const chainColors=chainColorsTable();
-  LEVELS.forEach((lvl,i)=>{
-    const color=chainColors[i];
+  levels.forEach((lvl,i)=>{
+    const color=chainColorAt(i);
     const widthPct=(lvl.days/totalDays)*100;
     let fillPct=0;
     if(i<levelIndex) fillPct=100;
     else if(i===levelIndex) fillPct=Math.min(100,Math.round((streak/lvl.days)*100));
-    segs+=`<div style="flex:${lvl.days};height:100%;background:var(--sur2);border-radius:2px;overflow:hidden;margin-right:${i<LEVELS.length-1?'1.5px':'0'}">
+    segs+=`<div style="flex:${lvl.days};height:100%;background:var(--sur2);border-radius:2px;overflow:hidden;margin-right:${i<levels.length-1?'1.5px':'0'}">
       <div style="width:${fillPct}%;height:100%;background:${color};transition:width .4s"></div>
     </div>`;
   });
@@ -1699,11 +1762,8 @@ async function renderGroupTab(){
   }
   spin(false);
 
-  membersData.sort((a,b)=>{
-    const totalA=(a.levelIndex||0)*1000+(a.streak||0);
-    const totalB=(b.levelIndex||0)*1000+(b.streak||0);
-    return totalB-totalA;
-  });
+  // Herkes kendi aşama tablosunu belirleyebildiği için sıralama aşama adına değil, toplam okunan güne göre yapılır
+  membersData.sort((a,b)=>(b.totalDays||0)-(a.totalDays||0));
 
   const listEl=document.getElementById('grup-members-list');
   if(!membersData.length){
@@ -1713,9 +1773,9 @@ async function renderGroupTab(){
 
   listEl.innerHTML='';
   membersData.forEach(m=>{
-    const lvl=LEVELS[Math.min(m.levelIndex??0,LEVELS.length-1)];
+    const mLevels=(m.levels&&m.levels.length)?m.levels:DEFAULT_LVLS;
+    const lvl=mLevels[Math.min(m.levelIndex??0,mLevels.length-1)];
     const isMe=m.name===S.name;
-    const prog=Math.min((m.streak||0)/lvl.days,1);
     const initials=(m.name||'?').slice(0,2).toUpperCase();
     const todayOk=m.todayLogged && m.todayDate===todayStr();
 
@@ -1728,11 +1788,11 @@ async function renderGroupTab(){
           <span class="grup-member-name">${m.name}</span>
           ${isMe?'<span class="grup-member-me-tag">Sen</span>':''}
         </div>
-        <div class="grup-member-stage">${lvl.label.split('—')[0].trim()} ${todayOk?'· Bugün okudu':'· Bugün henüz yok'}</div>
-        ${miniChainHTML(m.levelIndex||0, m.streak||0)}
+        <div class="grup-member-stage">${escHtml(lvl.name)} ${todayOk?'· Bugün okudu':'· Bugün henüz yok'}</div>
+        ${miniChainHTML(mLevels, m.levelIndex||0, m.streak||0)}
       </div>
       <div class="grup-member-streak">
-        <div class="grup-member-streak-n">${totalChainDayHTML(m.levelIndex||0, m.streak||0)}</div>
+        <div class="grup-member-streak-n">${totalChainDayHTML(mLevels, m.levelIndex||0, m.streak||0)}</div>
       </div>`;
     listEl.appendChild(div);
   });
@@ -2071,13 +2131,13 @@ function applyReading(dateStr, pages){
   recalcAll();
 
   if(isToday){
-    const lvl=LEVELS[S.levelIndex];
+    const lvl=curLevels()[S.levelIndex];
     const entryNow=S.history.find(h=>h.date===dateStr);
     const ok=entryNow&&entryNow.success;
     if(S.levelIndex>oldLevel){
-      showMsg('ok','Tebrikler! Yeni aşama: '+lvl.label);
+      showMsg('ok','Tebrikler! Yeni aşama: '+lvl.name);
     } else if(S.levelIndex<oldLevel){
-      showMsg('warn','Zincir bozuldu. Yarın '+lvl.label+' aşamasından devam.');
+      showMsg('warn','Zincir bozuldu. Yarın '+lvl.name+' aşamasından devam.');
     } else if(ok){
       const rem=lvl.days-S.streak;
       showMsg('ok', rem>0?'✓ Kaydedildi! Sonraki aşama için '+rem+' gün daha.':'✓ Harika devam!');
@@ -2105,12 +2165,12 @@ function recalcAll(){
       // kayıtsız geçmiş gün = zincir bozuldu (bugün hariç, henüz girilmemiş olabilir)
       if(ds!==today){ if(li>0)li--; st=0; }
     } else {
-      const target=LEVELS[li].pages;
+      const target=curLevels()[li].pages;
       if(e.pages>=target){
         e.success=true;
         st++; total++;
-        if(st>=LEVELS[li].days){
-          if(li<LEVELS.length-1){li++;st=0;}
+        if(st>=curLevels()[li].days){
+          if(li<curLevels().length-1){li++;st=0;}
           else{st=0;} // hatim tamamlandı, yeni hatim başlar
         }
       } else {
@@ -2209,7 +2269,7 @@ function getReadStreak(){
    RENDER — TAKİBİM
 ══════════════════════════════ */
 function renderMe(){
-  const lvl=LEVELS[S.levelIndex];
+  const lvl=curLevels()[S.levelIndex];
   document.getElementById('s-total').textContent=S.totalDays;
   document.getElementById('s-streak').textContent=getReadStreak();
   scheduleReminder(); // bugünkü durum değişmiş olabilir (kaydedildi/düzenlendi) — hatırlatmayı buna göre ayarla
@@ -2224,7 +2284,7 @@ function renderMe(){
     btn.textContent='Bugün kaydedildi ✓';btn.disabled=true;btn.className='save-btn done';
     tc.textContent='Bugün tamamlandı ✓';
     // Yarınki hedef = güncel seviyenin hedefi (recalc sonrası)
-    tl.innerHTML='Yarınki hedef: <b>'+lvl.pages+' sayfa</b> ('+lvl.label.split('—')[0].trim()+')';
+    tl.innerHTML='Yarınki hedef: <b>'+lvl.pages+' sayfa</b> ('+escHtml(lvl.name)+')';
     sw.style.opacity='.4';
     sw.style.pointerEvents='none';
     document.getElementById('no-read-btn').style.display='none';
@@ -2236,7 +2296,7 @@ function renderMe(){
     // Bugünkü hedef + altında kalırsa ne olur
     let uyari='';
     if(S.levelIndex>0){
-      const onceki=LEVELS[S.levelIndex-1].label.split('—')[0].trim();
+      const onceki=escHtml(curLevels()[S.levelIndex-1].name);
       uyari=' · <span class="warn-part">Altında kalırsan '+onceki+' aşamasına dönersin</span>';
     }
     tl.innerHTML='Bugünkü hedef: <b>'+lvl.pages+' sayfa</b>'+uyari;
@@ -2259,17 +2319,16 @@ const CHAIN_COLORS_LIGHT=['#7A9E3F','#16A34A','#0E8F73','#1379A6','#B45309','#8B
 function chainColorsTable(){
   return currentTheme()==='light' ? CHAIN_COLORS_LIGHT : CHAIN_COLORS;
 }
-const CHAIN_NAMES=['1\'ler','3\'ler','5\'ler','10\'lar','20\'ler','Hatim'];
 
 function renderChain(){
   const track=document.getElementById('chain-track');
   const labels=document.getElementById('chain-labels');
   track.innerHTML=''; labels.innerHTML='';
-  const totalDays=LEVELS.reduce((a,l)=>a+l.days,0);
-  const chainColors=chainColorsTable();
+  const levels=curLevels();
+  const totalDays=levels.reduce((a,l)=>a+l.days,0);
 
-  LEVELS.forEach((lvl,i)=>{
-    const color=chainColors[i];
+  levels.forEach((lvl,i)=>{
+    const color=chainColorAt(i);
     const done=i<S.levelIndex;
     const act=i===S.levelIndex;
 
@@ -2292,37 +2351,115 @@ function renderChain(){
     lbl.className='chain-lbl'+(act?' active':done?' done':'');
     lbl.style.flex=lvl.days;
     lbl.style.setProperty('--seg-color',color);
-    lbl.textContent=CHAIN_NAMES[i];
+    lbl.textContent=lvl.name;
     labels.appendChild(lbl);
   });
 
+  document.getElementById('chain-lbl-first').textContent=levels[0].name;
+  document.getElementById('chain-lbl-last').textContent=levels[levels.length-1].name;
+
   // pozisyon metni
-  const doneDays=LEVELS.slice(0,S.levelIndex).reduce((a,l)=>a+l.days,0)+S.streak;
-  const lvl=LEVELS[S.levelIndex];
+  const doneDays=levels.slice(0,S.levelIndex).reduce((a,l)=>a+l.days,0)+S.streak;
+  const lvl=levels[S.levelIndex];
   document.getElementById('chain-pos').innerHTML=
-    `<b>${CHAIN_NAMES[S.levelIndex]}</b> aşamasında ${S.streak}/${lvl.days} gün &nbsp;·&nbsp; Toplam yol: ${doneDays}/${totalDays} gün`;
+    `<b>${escHtml(lvl.name)}</b> aşamasında ${S.streak}/${lvl.days} gün &nbsp;·&nbsp; Toplam yol: ${doneDays}/${totalDays} gün`;
 }
 
 function renderLevels(){
   const c=document.getElementById('lvls');c.innerHTML='';
-  LEVELS.forEach((lvl,i)=>{
+  const levels=curLevels();
+  levels.forEach((lvl,i)=>{
     const done=i<S.levelIndex,act=i===S.levelIndex;
     const d=document.createElement('div');
     if(act){
       const prog=Math.min(S.streak/lvl.days,1);
       d.className='lvi act';
-      d.innerHTML=`<div class="lvr"><span class="lvn">${lvl.label}</span><span class="chip ca">Aktif</span></div>
+      d.innerHTML=`<div class="lvr"><span class="lvn">${stageDesc(lvl)}</span><span class="chip ca">Aktif</span></div>
       <div class="bb"><div class="bf ba" style="width:${Math.round(prog*100)}%"></div></div>
-      <div class="lvm"><span>${S.streak}/${lvl.days} gün</span><span>${i<LEVELS.length-1?'Sonraki: '+LEVELS[i+1].label.split('—')[0].trim():'Son aşama'}</span></div>`;
+      <div class="lvm"><span>${S.streak}/${lvl.days} gün</span><span>${i<levels.length-1?'Sonraki: '+escHtml(levels[i+1].name):'Son aşama'}</span></div>`;
     } else if(done){
       d.className='lvi done compact';
-      d.innerHTML=`<div class="lvr"><span class="lvn">${lvl.label}</span><span class="chip cd">✓ ${lvl.days}/${lvl.days} gün</span></div>`;
+      d.innerHTML=`<div class="lvr"><span class="lvn">${stageDesc(lvl)}</span><span class="chip cd">✓ ${lvl.days}/${lvl.days} gün</span></div>`;
     } else {
       d.className='lvi locked compact';
-      d.innerHTML=`<div class="lvr"><span class="lvn">${lvl.label}</span><span class="chip cl">${lvl.days} gün</span></div>`;
+      d.innerHTML=`<div class="lvr"><span class="lvn">${stageDesc(lvl)}</span><span class="chip cl">${lvl.days} gün</span></div>`;
     }
     c.appendChild(d);
   });
+}
+
+/* ══════════════════════════════
+   AŞAMALARI DÜZENLE
+══════════════════════════════ */
+let editLevels=null;
+
+function openLevelsEdit(){
+  editLevels=curLevels().map(l=>({...l}));
+  renderLevelsEditList();
+  document.getElementById('lvl-edit-err').textContent='';
+  document.getElementById('levels-edit-modal').classList.add('on');
+  lockBodyScroll();
+}
+function closeLevelsEdit(){
+  document.getElementById('levels-edit-modal').classList.remove('on');
+  unlockBodyScroll();
+  editLevels=null;
+}
+function renderLevelsEditList(){
+  const c=document.getElementById('lvl-edit-list'); c.innerHTML='';
+  editLevels.forEach((lvl,i)=>{
+    const row=document.createElement('div');
+    row.className='lvl-edit-row';
+    row.innerHTML=`
+      <div class="lvl-edit-move">
+        <button ${i===0?'disabled':''} onclick="moveEditLevel(${i},-1)" aria-label="Yukarı taşı">▲</button>
+        <button ${i===editLevels.length-1?'disabled':''} onclick="moveEditLevel(${i},1)" aria-label="Aşağı taşı">▼</button>
+      </div>
+      <div class="lvl-edit-dot" style="background:${chainColorAt(i)}"></div>
+      <input class="lvl-edit-name" value="${escHtml(lvl.name)}" maxlength="24" oninput="editLevels[${i}].name=this.value">
+      <input class="lvl-edit-num" type="number" inputmode="numeric" min="1" max="604" value="${lvl.pages}" aria-label="Sayfa" oninput="editLevels[${i}].pages=this.value">
+      <input class="lvl-edit-num" type="number" inputmode="numeric" min="1" max="365" value="${lvl.days}" aria-label="Gün" oninput="editLevels[${i}].days=this.value">
+      <button class="lvl-edit-del" ${editLevels.length<=1?'disabled':''} onclick="removeEditLevel(${i})" aria-label="Aşamayı sil">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+      </button>`;
+    c.appendChild(row);
+  });
+}
+function addEditLevel(){
+  if(editLevels.length>=12){ document.getElementById('lvl-edit-err').textContent='En fazla 12 aşama ekleyebilirsin.'; return; }
+  editLevels.push({name:'Yeni Aşama', pages:1, days:1});
+  renderLevelsEditList();
+}
+function removeEditLevel(i){
+  if(editLevels.length<=1) return;
+  editLevels.splice(i,1);
+  renderLevelsEditList();
+}
+function moveEditLevel(i,dir){
+  const j=i+dir;
+  if(j<0||j>=editLevels.length) return;
+  [editLevels[i],editLevels[j]]=[editLevels[j],editLevels[i]];
+  renderLevelsEditList();
+}
+function saveLevelsEdit(){
+  const err=document.getElementById('lvl-edit-err');
+  const cleaned=[];
+  for(const l of editLevels){
+    const name=(l.name||'').trim();
+    const pages=Math.round(Number(l.pages));
+    const days=Math.round(Number(l.days));
+    if(!name){ err.textContent='Her aşamanın bir adı olmalı.'; return; }
+    if(!Number.isFinite(pages)||pages<1||pages>604){ err.textContent=name+': sayfa sayısı 1-604 arasında olmalı.'; return; }
+    if(!Number.isFinite(days)||days<1||days>365){ err.textContent=name+': gün sayısı 1-365 arasında olmalı.'; return; }
+    cleaned.push({name,pages,days});
+  }
+  err.textContent='';
+  S.levels=cleaned;
+  recalcAll();
+  saveLocal();
+  syncToFb();
+  closeLevelsEdit();
+  renderMe();
 }
 
 /* ══════════════════════════════
