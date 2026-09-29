@@ -89,6 +89,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .auth-title{font-size:20px;font-weight:700;color:var(--txt)}
 .auth-sub{font-size:12px;color:var(--mut);margin-top:3px}
 .auth-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:8px;width:100%;max-width:360px}
+
+/* HEDEF SEÇİM EKRANI */
+.goal-screen{min-height:100dvh;display:none;flex-direction:column;align-items:center;padding:48px 24px 32px;box-sizing:border-box}
+.goal-head{text-align:center;margin-bottom:26px;max-width:380px}
+.goal-title{font-size:19px;font-weight:700;color:var(--txt);margin-bottom:6px}
+.goal-sub{font-size:12.5px;color:var(--mut);line-height:1.55}
+.goal-list{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
+.goal-card{background:var(--sur);border:1.5px solid var(--bor);border-radius:var(--r);padding:16px;text-align:left;cursor:pointer;font-family:inherit;color:var(--txt);transition:all .15s;width:100%}
+.goal-card:active{background:var(--sur2);border-color:var(--grn)}
+.goal-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.goal-card-title{font-size:14.5px;font-weight:700}
+.goal-card-days{font-size:11px;font-weight:700;color:var(--grn);background:var(--grn-dim);padding:3px 9px;border-radius:100px;flex-shrink:0}
+.goal-card-sub{font-size:12px;color:var(--mut);margin-bottom:11px;line-height:1.45}
+.goal-card-bar{display:flex;height:6px;width:100%;margin-bottom:7px}
+.goal-card-steps{font-size:10.5px;color:var(--mut2);font-variant-numeric:tabular-nums}
 .auth-tabs{display:flex;background:var(--sur2);border-radius:100px;padding:4px;gap:2px;margin-bottom:16px}
 .auth-tab{flex:1;padding:10px 8px;background:none;border:none;border-radius:100px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .2s}
 .auth-tab.on{color:#06130C;background:var(--grn)}
@@ -618,6 +633,15 @@ input[type=range].pgslider::-moz-range-thumb{
   </div>
 </div>
 
+<!-- HEDEF SEÇİM EKRANI (kayıttan hemen sonra) -->
+<div id="goal-screen" class="goal-screen">
+  <div class="goal-head">
+    <div class="goal-title">Hedefini seç</div>
+    <div class="goal-sub">Günde en fazla kaç sayfa okumayı hedefliyorsun? İstersen sonra Yolculuk sekmesinden değiştirebilirsin.</div>
+  </div>
+  <div class="goal-list" id="goal-list"></div>
+</div>
+
 <!-- APP -->
 <div id="app" style="display:none">
   <div class="topbar">
@@ -958,6 +982,71 @@ function escHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 /* Zincir rengi: aşama sayısı 6'yı geçerse renk paleti baştan döner */
 function chainColorAt(i){ const t=chainColorsTable(); return t[i % t.length]; }
 
+/* Kayıt sonrası "hedefini seç" ekranındaki hazır aşama tabloları */
+const GOAL_PRESETS = [
+  { id:'g3', title:'3 Sayfa Hedefi', desc:'Günde en fazla 3 sayfa okuyarak ilerle', levels:[
+    {name:'1\'ler', pages:1, days:10},
+    {name:'2\'ler', pages:2, days:20},
+    {name:'3\'ler', pages:3, days:30},
+  ]},
+  { id:'g5', title:'5 Sayfa Hedefi', desc:'Günde en fazla 5 sayfa okuyarak ilerle', levels:[
+    {name:'1\'ler', pages:1, days:5},
+    {name:'2\'ler', pages:2, days:10},
+    {name:'3\'ler', pages:3, days:15},
+    {name:'4\'ler', pages:4, days:20},
+    {name:'5\'ler', pages:5, days:30},
+  ]},
+  { id:'g10', title:'10 Sayfa Hedefi', desc:'Günde en fazla 10 sayfa okuyarak ilerle', levels:[
+    {name:'1\'ler', pages:1, days:3},
+    {name:'2\'ler', pages:2, days:6},
+    {name:'3\'ler', pages:3, days:9},
+    {name:'4\'ler', pages:4, days:12},
+    {name:'5\'ler', pages:5, days:15},
+    {name:'7\'ler', pages:7, days:20},
+    {name:'10\'lar', pages:10, days:30},
+  ]},
+  { id:'hatim', title:'Aylık Hatim', desc:'Mevcut yolculuk: kademeli artarak her ay bir hatim hedefle', levels:DEFAULT_LVLS },
+];
+
+function goalPreviewBarHTML(levels){
+  let segs='';
+  levels.forEach((lvl,i)=>{
+    segs+=`<div style="flex:${lvl.days};background:${chainColorAt(i)};opacity:.85;border-radius:2px;margin-right:${i<levels.length-1?'2px':'0'}"></div>`;
+  });
+  return segs;
+}
+function renderGoalScreen(){
+  const c=document.getElementById('goal-list'); c.innerHTML='';
+  GOAL_PRESETS.forEach(g=>{
+    const totalDays=g.levels.reduce((a,l)=>a+l.days,0);
+    const steps=g.levels.map(l=>l.pages).join('→')+' sayfa';
+    const btn=document.createElement('button');
+    btn.className='goal-card';
+    btn.onclick=()=>chooseGoal(g.id);
+    btn.innerHTML=`
+      <div class="goal-card-head"><span class="goal-card-title">${g.title}</span><span class="goal-card-days">${totalDays} gün</span></div>
+      <div class="goal-card-sub">${g.desc}</div>
+      <div class="goal-card-bar">${goalPreviewBarHTML(g.levels)}</div>
+      <div class="goal-card-steps">${steps}</div>`;
+    c.appendChild(btn);
+  });
+}
+function openGoalScreen(){
+  document.getElementById('auth-screen').style.display='none';
+  renderGoalScreen();
+  document.getElementById('goal-screen').style.display='flex';
+}
+function chooseGoal(id){
+  const preset=GOAL_PRESETS.find(g=>g.id===id);
+  if(!preset||!S) return;
+  S.levels=preset.levels.map(l=>({...l}));
+  recalcAll();
+  saveLocal();
+  syncToFb();
+  document.getElementById('goal-screen').style.display='none';
+  enterApp();
+}
+
 /* Kuran sure tablosu: [sure_adı, başlangıç_sayfası] */
 const SURELER = [
   ['Fatiha',1],['Bakara',1],['Al-i İmran',49],['Nisa',76],['Maide',105],
@@ -1293,7 +1382,7 @@ async function handleRegister(){
 
     setAuthMsg('reg','Hesap oluşturuldu!','ok');
     spin(false);
-    setTimeout(()=>enterApp(),400);
+    setTimeout(()=>openGoalScreen(),400);
   }catch(e){
     setAuthMsg('reg','Bağlantı hatası, tekrar dene.','err');
     btn.disabled=false; spin(false);
