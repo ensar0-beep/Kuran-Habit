@@ -64,23 +64,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .chain-pos{font-size:12px;color:var(--mut);text-align:center;padding-top:2px}
 .chain-pos b{color:var(--grn)}
 
-/* AŞAMA DÜZENLEME */
-.lvl-edit-row{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 6px;background:var(--sur2);border:1px solid var(--bor);border-radius:12px;margin-bottom:8px}
-.lvl-edit-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.lvl-edit-move{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
-.lvl-edit-move button{width:18px;height:14px;border:none;background:transparent;color:var(--mut2);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0}
-.lvl-edit-move button:disabled{opacity:.25;cursor:default}
-.lvl-edit-name{flex-grow:1;min-width:0;padding:8px 8px;background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--txt);font-size:12.5px;font-family:inherit;font-weight:600}
-.lvl-edit-num{width:42px;flex-shrink:0;padding:8px 4px;text-align:center;background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--txt);font-size:12.5px;font-family:inherit;font-weight:600}
-.lvl-edit-del{width:28px;height:28px;flex-shrink:0;border:none;border-radius:8px;background:transparent;color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.lvl-edit-del:disabled{opacity:.25;cursor:default}
-.lvl-edit-labels{display:flex;gap:8px;padding:0 10px 0 44px;margin-bottom:4px}
-.lvl-edit-labels span{font-size:9px;color:var(--mut2);text-transform:uppercase;letter-spacing:.03em;width:42px;text-align:center;flex-shrink:0}
-.lvl-edit-labels span:first-child{flex-grow:1;width:auto;text-align:left;margin-right:0}
-.lvl-edit-add{width:100%;padding:12px;border:1.5px dashed var(--bor);border-radius:12px;background:transparent;color:var(--mut);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:14px}
+/* HEDEF SEÇİMİ UYARISI (kayıt ekranı ve Yolculuk'taki "Hedefini Seç" ortak) */
 .lvl-edit-warn{display:flex;gap:10px;padding:12px 14px;background:var(--gold-dim);border:1px solid var(--gold);border-left-width:3px;border-radius:10px;font-size:11.5px;color:var(--mut-strong);line-height:1.55;margin-bottom:14px}
 .lvl-edit-warn svg{flex-shrink:0;margin-top:1px}
-.lvl-edit-err{font-size:12px;color:var(--red);margin:-6px 0 12px;min-height:1em}
 
 /* AUTH SCREEN */
 .auth-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
@@ -98,6 +84,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .goal-list{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
 .goal-card{background:var(--sur);border:1.5px solid var(--bor);border-radius:var(--r);padding:16px;text-align:left;cursor:pointer;font-family:inherit;color:var(--txt);transition:all .15s;width:100%}
 .goal-card:active{background:var(--sur2);border-color:var(--grn)}
+.goal-card.active{border-color:var(--grn);background:var(--grn-dim)}
+.goal-card.active .goal-card-title{color:var(--grn)}
 .goal-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
 .goal-card-title{font-size:14.5px;font-weight:700}
 .goal-card-days{font-size:11px;font-weight:700;color:var(--grn);background:var(--grn-dim);padding:3px 9px;border-radius:100px;flex-shrink:0}
@@ -734,7 +722,7 @@ input[type=range].pgslider::-moz-range-thumb{
     <div class="chain-card">
       <div class="chain-card-head">
         <div class="chain-card-title">Yolculuk Zinciri</div>
-        <button class="chain-settings-btn" onclick="openLevelsEdit()" aria-label="Aşamaları düzenle">
+        <button class="chain-settings-btn" onclick="openLevelsEdit()" aria-label="Hedefini değiştir">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .33-1.82 1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.82.33H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.33 1.82V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
         </button>
       </div>
@@ -878,25 +866,16 @@ input[type=range].pgslider::-moz-range-thumb{
   </div>
 </div>
 
-<!-- AŞAMALARI DÜZENLE -->
+<!-- AŞAMANI SEÇ -->
 <div class="modal-bg" id="levels-edit-modal">
   <div class="modal" style="max-height:85vh;overflow-y:auto">
-    <div class="modal-title">Aşamaları Düzenle</div>
+    <div class="modal-title">Hedefini Seç</div>
     <div class="lvl-edit-warn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
-      <span>Kaydettiğinde geçmiş günlerin de yeni hedeflere göre yeniden değerlendirilir; aşaman/serin anında değişebilir.</span>
+      <span>Değiştirdiğinde geçmiş günlerin de yeni hedefe göre yeniden değerlendirilir; aşaman/serin anında değişebilir.</span>
     </div>
-    <div class="lvl-edit-labels"><span>Aşama adı</span><span>Sayfa</span><span>Gün</span></div>
-    <div id="lvl-edit-list"></div>
-    <button class="lvl-edit-add" onclick="addEditLevel()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Yeni aşama ekle
-    </button>
-    <div class="lvl-edit-err" id="lvl-edit-err"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeLevelsEdit()">İptal</button>
-      <button class="btn-save-modal" onclick="saveLevelsEdit()">Kaydet</button>
-    </div>
+    <div class="goal-list" id="lvl-preset-list"></div>
+    <button class="btn-cancel" style="width:100%;margin-top:14px" onclick="closeLevelsEdit()">Kapat</button>
   </div>
 </div>
 
@@ -1015,14 +994,19 @@ function goalPreviewBarHTML(levels){
   });
   return segs;
 }
-function renderGoalScreen(){
-  const c=document.getElementById('goal-list'); c.innerHTML='';
+function levelsEqual(a,b){
+  return !!a && !!b && a.length===b.length && a.every((l,i)=>l.name===b[i].name && l.pages===b[i].pages && l.days===b[i].days);
+}
+/* GOAL_PRESETS kartlarını bir konteynere basar; kart tıklanınca onPick(id) çağrılır */
+function renderPresetCards(containerId, onPick, activeLevels){
+  const c=document.getElementById(containerId); c.innerHTML='';
   GOAL_PRESETS.forEach(g=>{
     const totalDays=g.levels.reduce((a,l)=>a+l.days,0);
     const steps=g.levels.map(l=>l.pages).join('→')+' sayfa';
+    const isActive=levelsEqual(activeLevels,g.levels);
     const btn=document.createElement('button');
-    btn.className='goal-card';
-    btn.onclick=()=>chooseGoal(g.id);
+    btn.className='goal-card'+(isActive?' active':'');
+    btn.onclick=()=>onPick(g.id);
     btn.innerHTML=`
       <div class="goal-card-head"><span class="goal-card-title">${g.title}</span><span class="goal-card-days">${totalDays} gün</span></div>
       <div class="goal-card-sub">${g.desc}</div>
@@ -1031,18 +1015,23 @@ function renderGoalScreen(){
     c.appendChild(btn);
   });
 }
-function openGoalScreen(){
-  document.getElementById('auth-screen').style.display='none';
-  renderGoalScreen();
-  document.getElementById('goal-screen').style.display='flex';
-}
-function chooseGoal(id){
+/* Seçilen hazır hedefi S.levels'a yazar, geçmişi yeniden hesaplar, kaydeder */
+function applyGoalPreset(id){
   const preset=GOAL_PRESETS.find(g=>g.id===id);
-  if(!preset||!S) return;
+  if(!preset||!S) return false;
   S.levels=preset.levels.map(l=>({...l}));
   recalcAll();
   saveLocal();
   syncToFb();
+  return true;
+}
+function openGoalScreen(){
+  document.getElementById('auth-screen').style.display='none';
+  renderPresetCards('goal-list', chooseGoal);
+  document.getElementById('goal-screen').style.display='flex';
+}
+function chooseGoal(id){
+  if(!applyGoalPreset(id)) return;
   document.getElementById('goal-screen').style.display='none';
   enterApp();
 }
@@ -2478,75 +2467,19 @@ function renderLevels(){
 }
 
 /* ══════════════════════════════
-   AŞAMALARI DÜZENLE
+   HEDEFİNİ SEÇ (Yolculuk sekmesinden)
 ══════════════════════════════ */
-let editLevels=null;
-
 function openLevelsEdit(){
-  editLevels=curLevels().map(l=>({...l}));
-  renderLevelsEditList();
-  document.getElementById('lvl-edit-err').textContent='';
+  renderPresetCards('lvl-preset-list', pickLevelsPreset, curLevels());
   document.getElementById('levels-edit-modal').classList.add('on');
   lockBodyScroll();
 }
 function closeLevelsEdit(){
   document.getElementById('levels-edit-modal').classList.remove('on');
   unlockBodyScroll();
-  editLevels=null;
 }
-function renderLevelsEditList(){
-  const c=document.getElementById('lvl-edit-list'); c.innerHTML='';
-  editLevels.forEach((lvl,i)=>{
-    const row=document.createElement('div');
-    row.className='lvl-edit-row';
-    row.innerHTML=`
-      <div class="lvl-edit-move">
-        <button ${i===0?'disabled':''} onclick="moveEditLevel(${i},-1)" aria-label="Yukarı taşı">▲</button>
-        <button ${i===editLevels.length-1?'disabled':''} onclick="moveEditLevel(${i},1)" aria-label="Aşağı taşı">▼</button>
-      </div>
-      <div class="lvl-edit-dot" style="background:${chainColorAt(i)}"></div>
-      <input class="lvl-edit-name" value="${escHtml(lvl.name)}" maxlength="24" oninput="editLevels[${i}].name=this.value">
-      <input class="lvl-edit-num" type="number" inputmode="numeric" min="1" max="604" value="${lvl.pages}" aria-label="Sayfa" oninput="editLevels[${i}].pages=this.value">
-      <input class="lvl-edit-num" type="number" inputmode="numeric" min="1" max="365" value="${lvl.days}" aria-label="Gün" oninput="editLevels[${i}].days=this.value">
-      <button class="lvl-edit-del" ${editLevels.length<=1?'disabled':''} onclick="removeEditLevel(${i})" aria-label="Aşamayı sil">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
-      </button>`;
-    c.appendChild(row);
-  });
-}
-function addEditLevel(){
-  if(editLevels.length>=12){ document.getElementById('lvl-edit-err').textContent='En fazla 12 aşama ekleyebilirsin.'; return; }
-  editLevels.push({name:'Yeni Aşama', pages:1, days:1});
-  renderLevelsEditList();
-}
-function removeEditLevel(i){
-  if(editLevels.length<=1) return;
-  editLevels.splice(i,1);
-  renderLevelsEditList();
-}
-function moveEditLevel(i,dir){
-  const j=i+dir;
-  if(j<0||j>=editLevels.length) return;
-  [editLevels[i],editLevels[j]]=[editLevels[j],editLevels[i]];
-  renderLevelsEditList();
-}
-function saveLevelsEdit(){
-  const err=document.getElementById('lvl-edit-err');
-  const cleaned=[];
-  for(const l of editLevels){
-    const name=(l.name||'').trim();
-    const pages=Math.round(Number(l.pages));
-    const days=Math.round(Number(l.days));
-    if(!name){ err.textContent='Her aşamanın bir adı olmalı.'; return; }
-    if(!Number.isFinite(pages)||pages<1||pages>604){ err.textContent=name+': sayfa sayısı 1-604 arasında olmalı.'; return; }
-    if(!Number.isFinite(days)||days<1||days>365){ err.textContent=name+': gün sayısı 1-365 arasında olmalı.'; return; }
-    cleaned.push({name,pages,days});
-  }
-  err.textContent='';
-  S.levels=cleaned;
-  recalcAll();
-  saveLocal();
-  syncToFb();
+function pickLevelsPreset(id){
+  if(!applyGoalPreset(id)) return;
   closeLevelsEdit();
   renderMe();
 }
