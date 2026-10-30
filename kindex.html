@@ -19,6 +19,7 @@
   --grn:#3DDC84; --grn-dim:#1A3A2A; --grn-txt:#3DDC84;
   --txt:#FFFFFF; --mut:#8892A4; --mut2:#5A6478; --mut-strong:#A3ADC0;
   --gold:#F5C842; --gold-dim:#2A2010; --red:#FF5C5C; --red-dim:#3A1A1A;
+  --blu:#4DA3FF; --blu-dim:#172A40;
   --r:14px; --rs:10px;
   /* yüzen cam alt bar */
   --glass-bg:rgba(30,37,48,.52); --glass-bor:rgba(255,255,255,.09); --glass-hi:rgba(255,255,255,.07);
@@ -30,6 +31,7 @@
   --grn:#16A34A; --grn-dim:#E3F6EA; --grn-txt:#16A34A;
   --txt:#151A17; --mut:#5B655F; --mut2:#8B958E; --mut-strong:#424A45;
   --gold:#B45309; --gold-dim:#FCF1DC; --red:#DC2626; --red-dim:#FCEAEA;
+  --blu:#1379A6; --blu-dim:#E1F1F8;
   --glass-bg:rgba(255,255,255,.55); --glass-bor:rgba(0,0,0,.08); --glass-hi:rgba(255,255,255,.9);
   --glass-bubble:rgba(0,0,0,.07); --glass-bubble-bor:rgba(0,0,0,.05);
 }
@@ -256,7 +258,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* Bugün kartı: sayı ortalı, +/- ile çevrili (takvim düzenleme modalının slider-top'una dokunmuyor) */
 #slider-wrap .slider-top{justify-content:center;gap:18px}
 #slider-wrap{padding-bottom:0;margin-bottom:0}
-#slider-wrap .no-read-btn{margin-bottom:12px}
+#slider-wrap .alt-row{margin-bottom:12px}
+.alt-row{display:flex;gap:8px;margin-bottom:10px}
+.alt-row .no-read-btn{flex:1;margin-bottom:0;padding:11px 4px}
 .slider-val{font-size:42px;font-weight:700;transition:color .2s}
 .slider-lbl{font-size:13px;color:var(--mut);text-align:right}
 .slider-lbl span{display:block;font-size:11px;margin-top:2px}
@@ -287,6 +291,18 @@ input[type=range].pgslider::-moz-range-thumb{
 .ms-item.reached{color:var(--mut)}
 .no-read-btn{width:100%;padding:11px;margin-bottom:10px;background:transparent;border:1.5px solid var(--bor);border-radius:var(--rs);font-size:13px;color:var(--mut);cursor:pointer;transition:all .15s}
 .no-read-btn.sel{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.no-read-btn.excuse-btn.sel{background:var(--blu-dim);border-color:var(--blu);color:var(--blu)}
+.ex-sub{font-size:12px;color:var(--mut);margin:-10px 0 14px}
+.ex-lbl{font-size:12px;color:var(--mut);margin-bottom:8px}
+.ex-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.ex-chip{padding:8px 13px;border-radius:99px;background:var(--sur2);border:1px solid var(--bor);color:var(--txt);font-size:13px;cursor:pointer}
+.ex-chip.sel{background:var(--blu-dim);border-color:var(--blu);color:var(--blu)}
+.ex-seg{display:flex;background:var(--sur2);border-radius:10px;padding:3px;margin-bottom:12px}
+.ex-seg button{flex:1;padding:9px 0;border:0;border-radius:8px;background:transparent;color:var(--mut);font-size:13px;cursor:pointer}
+.ex-seg button.sel{background:var(--bg);color:var(--txt);font-weight:600}
+.ex-date{width:100%;padding:11px;margin-bottom:12px;background:var(--sur2);border:1px solid var(--bor);border-radius:var(--rs);color:var(--txt);font-size:14px}
+.ex-sum{font-size:12px;color:var(--blu);margin-bottom:14px;min-height:16px}
+.btn-save-modal.blu{background:var(--blu);color:#fff}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 .sbox{background:var(--sur);border:1px solid var(--bor);border-radius:var(--rs);padding:13px 10px;text-align:center}
 .snum{font-size:22px;font-weight:700;color:var(--grn)}
@@ -462,6 +478,8 @@ input[type=range].pgslider::-moz-range-thumb{
 .cal-day.empty{background:var(--sur2);color:var(--mut);border-color:var(--bor)}
 .cal-day.ok{background:var(--grn-dim);color:var(--grn);border-color:var(--grn)}
 .cal-day.fail{background:var(--red-dim);color:var(--red);border-color:var(--red)}
+.cal-day.excused{background:var(--blu-dim);color:var(--blu);border-color:var(--blu)}
+.cal-day.future.excused{opacity:.55}
 .cal-day.today-mark{box-shadow:0 0 0 2px var(--grn)}
 .cal-day.editing{box-shadow:0 0 0 2px var(--gold)}
 .cal-day-badge{position:absolute;bottom:2px;right:3px;font-size:6.5px;font-weight:700;opacity:.75;font-variant-numeric:tabular-nums}
@@ -570,6 +588,34 @@ input[type=range].pgslider::-moz-range-thumb{
   </div>
 </div>
 
+<div class="modal-bg" id="excuse-modal" style="z-index:160" onclick="if(event.target===this)closeExcuse()">
+  <div class="modal">
+    <div class="modal-date" id="ex-date-lbl"></div>
+    <div class="modal-title">Mazeretin ne?</div>
+    <div class="ex-sub">Sebep sadece bu cihazda kalır, gruba ve buluta gitmez. Seri ve aşamanı bozmaz.</div>
+    <div class="ex-chips" id="ex-chips">
+      <button class="ex-chip sel" data-r="hastalik">Hastalık</button>
+      <button class="ex-chip" data-r="yolculuk">Yolculuk</button>
+      <button class="ex-chip" data-r="hayiz">Hayız / lohusalık</button>
+      <button class="ex-chip" data-r="sinav">Sınav, iş</button>
+      <button class="ex-chip" data-r="diger">Diğer</button>
+    </div>
+    <div class="ex-lbl">Ne kadar sürecek?</div>
+    <div class="ex-seg" id="ex-seg">
+      <button class="sel" data-n="1">Bir gün</button>
+      <button data-n="3">3 gün</button>
+      <button data-n="7">7 gün</button>
+      <button data-n="0">Tarih seç</button>
+    </div>
+    <input type="date" class="ex-date" id="ex-end" style="display:none" onchange="exUpdate()">
+    <div class="ex-sum" id="ex-sum"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeExcuse()">İptal</button>
+      <button class="btn-save-modal blu" id="ex-save" onclick="saveExcuse()">Mazereti kaydet</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="edit-modal" style="z-index:150">
   <div class="modal">
     <div class="modal-date" id="edit-date-lbl"></div>
@@ -586,7 +632,10 @@ input[type=range].pgslider::-moz-range-thumb{
         <button onclick="modalQuickSet(10)">10</button>
         <button onclick="modalQuickSet(20)">20</button>
       </div>
-      <button class="no-read-btn" id="modal-no-read-btn" onclick="selectModalNoRead()">✕ &nbsp;O gün okumadım</button>
+      <div class="alt-row">
+        <button class="no-read-btn" id="modal-no-read-btn" onclick="selectModalNoRead()">✕ &nbsp;O gün okumadım</button>
+        <button class="no-read-btn excuse-btn" onclick="openExcuse(editDate,'edit')">☾ &nbsp;Mazeretliydim</button>
+      </div>
       <div class="range-track">
         <input type="range" class="pgslider" id="modal-pgslider" min="0" max="20" value="0" oninput="onModalSlider(this.value)">
       </div>
@@ -688,7 +737,10 @@ input[type=range].pgslider::-moz-range-thumb{
           <button onclick="quickSet(10)">10</button>
           <button onclick="quickSet(20)">20</button>
         </div>
-        <button class="no-read-btn" id="no-read-btn" onclick="selectNoRead()">✕ &nbsp;Bugün okumadım</button>
+        <div class="alt-row" id="alt-row">
+          <button class="no-read-btn" id="no-read-btn" onclick="selectNoRead()">✕ &nbsp;Bugün okumadım</button>
+          <button class="no-read-btn excuse-btn" id="excuse-btn" onclick="openExcuse(todayStr(),'today')">☾ &nbsp;Mazeretim var</button>
+        </div>
       </div>
       <button class="save-btn" id="save-btn" disabled onclick="logToday()">Okudum</button>
       <button class="edit-btn" id="edit-today-btn" onclick="editToday()" style="display:none">Bugünü düzenle</button>
@@ -876,6 +928,7 @@ input[type=range].pgslider::-moz-range-thumb{
     <div class="hist-legend">
       <span><span class="leg-dot" style="background:var(--grn)"></span>Okudu</span>
       <span><span class="leg-dot" style="background:var(--red)"></span>Okumadı</span>
+      <span><span class="leg-dot" style="background:var(--blu)"></span>Mazeret</span>
     </div>
     <button class="btn-cancel" style="width:100%;margin-top:14px" onclick="closeCalendarModal()">Kapat</button>
   </div>
@@ -1641,7 +1694,7 @@ function clearNotifyTimer(){
 
 /* Bugün için hedefin tutmadığını bildirir; günde en fazla bir kez */
 function fireReminder(){
-  if(!S || S.todayLogged) return;
+  if(!S || S.todayLogged || todayExcused()) return;
   const today=todayStr();
   if(localStorage.getItem(NOTIFY_FIRED_KEY)===today) return;
   const lvl=curLevels()[S.levelIndex];
@@ -1727,7 +1780,7 @@ function showApp(){
   document.getElementById('hdr-hijri').textContent='🌙 '+hijriDate();
   const todayEntry=S.history.find(h=>h.date===todayStr());
   const input=document.getElementById('page-input');
-  if(todayEntry){ input.value=todayEntry.pages; onPageInput(todayEntry.pages); }
+  if(todayEntry && !todayEntry.excused){ input.value=todayEntry.pages; onPageInput(todayEntry.pages); }
   else { input.value=''; onPageInput(''); }
   renderMe();
 }
@@ -1741,7 +1794,7 @@ function syncToFb(){
     name:S.name,levelIndex:S.levelIndex,streak:S.streak,
     totalDays:S.totalDays,todayLogged:S.todayLogged,todayDate:S.todayDate,
     currentPage:S.currentPage||null,groupCode:S.groupCode||null,avatarId:S.avatarId||'1',updatedAt:Date.now(),
-    history14:S.history, // tüm geçmiş buluta yedeklenir (isim tarihsel kalma nedeniyle "history14")
+    history14:S.history.map(({reason,...h})=>h), // mazeret sebebi buluta gitmez; tüm geçmiş buluta yedeklenir (isim tarihsel kalma nedeniyle "history14")
     levels:curLevels(), // grup üyeleri birbirinin aşama adını/ilerlemesini doğru gösterebilsin diye
   });
 }
@@ -2235,7 +2288,9 @@ function editToday(){
   const entry=S.history.find(h=>h.date===todayStr());
   renderMe();
   const input=document.getElementById('page-input');
-  if(entry && entry.pages===0){
+  if(entry && entry.excused){
+    input.value=''; onPageInput('');
+  } else if(entry && entry.pages===0){
     selectNoRead();
   } else if(entry){
     input.value=entry.pages;
@@ -2313,6 +2368,9 @@ function recalcAll(){
     if(e===undefined){
       // kayıtsız geçmiş gün = zincir bozuldu (bugün hariç, henüz girilmemiş olabilir)
       if(ds!==today){ if(li>0)li--; st=0; }
+    } else if(e.excused){
+      // mazeretli gün: seviye, seri ve toplam gün değişmez
+      e.success=false;
     } else {
       const target=curLevels()[li].pages;
       if(e.pages>=target){
@@ -2331,6 +2389,100 @@ function recalcAll(){
     d.setDate(d.getDate()+1);
   }
   S.levelIndex=li; S.streak=st; S.totalDays=total;
+}
+
+/* ══════════════════════════════
+   MAZERET (sebep + süre seçerek)
+══════════════════════════════ */
+function todayExcused(){
+  const e=S&&S.history.find(h=>h.date===todayStr());
+  return !!(e&&e.excused);
+}
+
+/* startDs'den başlayarak n gün mazeretli işaretler. Başlangıç günü hariç,
+   gerçekten okuma kaydı olan günlerin üzerine yazılmaz. */
+function applyExcuse(startDs, n, reason){
+  const today=todayStr();
+  const d=new Date(startDs+'T00:00:00');
+  for(let i=0;i<n;i++,d.setDate(d.getDate()+1)){
+    const ds=localDS(d);
+    const idx=S.history.findIndex(h=>h.date===ds);
+    const prev=idx>=0?S.history[idx]:null;
+    if(i>0 && prev && !prev.excused && prev.pages>0) continue;
+    if(prev && !prev.excused && prev.pages>0 && S.currentPage){
+      S.currentPage=Math.max(1,S.currentPage-prev.pages);
+    }
+    const entry={date:ds,pages:0,success:false,excused:true,reason};
+    if(idx>=0) S.history[idx]=entry; else S.history.push(entry);
+    if(ds===today){ S.todayLogged=true; S.todayDate=today; }
+  }
+  S.history.sort((a,b)=>a.date.localeCompare(b.date));
+  recalcAll();
+}
+
+let exStart=null, exReason='hastalik', exDays=1, exFrom='today';
+
+function openExcuse(ds, from){
+  if(!ds) return;
+  exStart=ds; exFrom=from; exReason='hastalik'; exDays=1;
+  document.getElementById('ex-date-lbl').textContent=formatDate(ds);
+  document.querySelectorAll('#ex-chips .ex-chip').forEach(b=>b.classList.toggle('sel',b.dataset.r===exReason));
+  document.querySelectorAll('#ex-seg button').forEach(b=>b.classList.toggle('sel',b.dataset.n==='1'));
+  const end=document.getElementById('ex-end');
+  const min=new Date(ds+'T00:00:00'); min.setDate(min.getDate()+1);
+  const max=new Date(ds+'T00:00:00'); max.setDate(max.getDate()+29);
+  end.min=localDS(min); end.max=localDS(max); end.value=''; end.style.display='none';
+  exUpdate();
+  document.getElementById('excuse-modal').classList.add('on');
+  lockBodyScroll();
+}
+
+function closeExcuse(){
+  document.getElementById('excuse-modal').classList.remove('on');
+  unlockBodyScroll();
+}
+
+function exCount(){
+  const seg=document.querySelector('#ex-seg button.sel');
+  if(seg && seg.dataset.n!=='0') return parseInt(seg.dataset.n);
+  const v=document.getElementById('ex-end').value;
+  if(!v) return 0;
+  const diff=Math.round((new Date(v+'T00:00:00')-new Date(exStart+'T00:00:00'))/86400000)+1;
+  return Math.max(0,Math.min(30,diff));
+}
+
+function exUpdate(){
+  const n=exCount();
+  document.getElementById('ex-save').disabled=n<1;
+  document.getElementById('ex-sum').textContent=n<1?'Bitiş tarihini seç':(n===1?'1 gün mazeretli sayılacak':n+' gün mazeretli sayılacak');
+}
+
+document.addEventListener('click',e=>{
+  const chip=e.target.closest('#ex-chips .ex-chip');
+  if(chip){
+    exReason=chip.dataset.r;
+    document.querySelectorAll('#ex-chips .ex-chip').forEach(b=>b.classList.toggle('sel',b===chip));
+    return;
+  }
+  const seg=e.target.closest('#ex-seg button');
+  if(seg){
+    document.querySelectorAll('#ex-seg button').forEach(b=>b.classList.toggle('sel',b===seg));
+    document.getElementById('ex-end').style.display=seg.dataset.n==='0'?'':'none';
+    exUpdate();
+  }
+});
+
+function saveExcuse(){
+  const n=exCount();
+  if(!exStart||n<1) return;
+  applyExcuse(exStart,n,exReason);
+  const wasEdit=exFrom==='edit';
+  closeExcuse();
+  if(wasEdit) closeEdit();
+  saveLocal(); syncToFb();
+  sel=null; editingToday=false;
+  renderMe(); renderCal();
+  if(!wasEdit) showMsg('ok', n===1?'☾ Mazeretin kaydedildi. Zincirin korunuyor.':'☾ '+n+' günlük mazeretin kaydedildi. Zincirin korunuyor.');
 }
 
 function showMsg(type,txt){
@@ -2407,6 +2559,7 @@ function getReadStreak(){
   let count=0;
   while(true){
     const e=map[localDS(d)];
+    if(e && e.excused){ d.setDate(d.getDate()-1); continue; } // mazeret zinciri ne artırır ne keser
     if(!e || !(e.pages>0)) break;
     count++;
     d.setDate(d.getDate()-1);
@@ -2429,14 +2582,15 @@ function renderMe(){
   const tl=document.getElementById('target-line');
   const editBtn=document.getElementById('edit-today-btn');
 
-  if(S.todayLogged && !editingToday){
-    btn.textContent='Bugün kaydedildi ✓';btn.disabled=true;btn.className='save-btn done';
-    tc.textContent='Bugün tamamlandı ✓';
+  const exc=todayExcused();
+  if((S.todayLogged||exc) && !editingToday){
+    btn.textContent=exc?'Bugün mazeretli ☾':'Bugün kaydedildi ✓';btn.disabled=true;btn.className='save-btn done';
+    tc.textContent=exc?'Bugün mazeretli ☾':'Bugün tamamlandı ✓';
     // Yarınki hedef = güncel seviyenin hedefi (recalc sonrası)
     tl.innerHTML='Yarınki hedef: <b>'+lvl.pages+' sayfa</b> ('+escHtml(lvl.name)+')';
     sw.style.opacity='.4';
     sw.style.pointerEvents='none';
-    document.getElementById('no-read-btn').style.display='none';
+    document.getElementById('alt-row').style.display='none';
     editBtn.style.display='';
   } else {
     btn.textContent=editingToday?'Güncelle':'Okudum';
@@ -2450,7 +2604,7 @@ function renderMe(){
     }
     tl.innerHTML='Bugünkü hedef: <b>'+lvl.pages+' sayfa</b>'+uyari;
     sw.style.opacity='1';sw.style.pointerEvents='';
-    document.getElementById('no-read-btn').style.display='';
+    document.getElementById('alt-row').style.display='';
     editBtn.style.display='none';
   }
 
@@ -2585,6 +2739,7 @@ function buildStatDays(rangeDays){
     const ds=localDS(d);
     if(ds===todayDs && !map[ds]){ d.setDate(d.getDate()+1); continue; }
     const e=map[ds];
+    if(e && e.excused){ d.setDate(d.getDate()+1); continue; } // mazeretli günler istatistiğe girmez
     list.push({date:new Date(d), ds, pages:e?(e.pages||0):0, success:e?!!e.success:false});
     d.setDate(d.getDate()+1);
   }
@@ -2783,14 +2938,15 @@ function renderCal(){
     const isFuture=ds>todayDs;
     const div=document.createElement('div');
     let cls='cal-day';
-    if(isFuture) cls+=' future';
+    if(isFuture) cls+=' future'+(entry&&entry.excused?' excused':'');
     else if(!entry) cls+=' empty';
+    else if(entry.excused) cls+=' excused';
     else if(entry.success) cls+=' ok';
     else cls+=' fail';
     if(isToday) cls+=' today-mark';
     div.className=cls;
-    div.innerHTML=day+(entry&&entry.pages>0?'<span class="cal-day-badge">'+entry.pages+'s</span>':'');
-    div.title=formatDate(ds)+(entry?' — '+entry.pages+' sayfa':'');
+    div.innerHTML=day+(entry&&entry.excused?'<span class="cal-day-badge">☾</span>':entry&&entry.pages>0?'<span class="cal-day-badge">'+entry.pages+'s</span>':'');
+    div.title=formatDate(ds)+(entry?(entry.excused?' — mazeretli':' — '+entry.pages+' sayfa'):'');
     if(!isToday && !isFuture) div.onclick=()=>openEdit(ds);
     c.appendChild(div);
   }
