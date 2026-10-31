@@ -226,6 +226,35 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 /* TODAY CARD */
 .tc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.week-strip{display:flex;justify-content:space-between;margin-bottom:16px}
+.week-strip .wd{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
+.week-strip .wd span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;border:1.5px solid var(--bor);color:var(--mut2)}
+.week-strip .wd .ok{background:var(--grn-dim);border-color:var(--grn);color:var(--grn)}
+.week-strip .wd .ex{background:var(--blu-dim);border-color:var(--blu);color:var(--blu)}
+.week-strip .wd .part{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);font-size:11px}
+.week-strip .wd .miss{border-color:var(--red);color:var(--red)}
+.week-strip .wd .now{border-color:var(--txt);color:var(--txt)}
+#today-entry,#today-done{text-align:center}
+.tg-lbl{font-size:12px;color:var(--mut);margin-bottom:4px}
+.tg-big{font-size:34px;font-weight:700;color:var(--txt);line-height:1.1;margin-bottom:14px}
+.tg-stepper{justify-content:center;gap:18px;margin-bottom:12px}
+.tg-links{display:flex;justify-content:center;gap:16px;margin-top:10px}
+.tg-links button{background:none;border:0;color:var(--mut);font:inherit;font-size:12.5px;cursor:pointer;padding:6px 2px;text-decoration:underline;text-underline-offset:3px}
+.tg-links button.blu{color:var(--blu)}
+.tg-links button.sel{color:var(--red)}
+.save-btn.zero{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+.tg-done{font-size:22px;font-weight:700;color:var(--grn);line-height:1.2}
+.tg-done.ex{color:var(--blu)} .tg-done.zero{color:var(--red)}
+.tg-next{font-size:12px;color:var(--mut);margin-top:6px}
+.tg-next b{color:var(--grn)}
+.stage-mini{margin-top:14px;padding-top:12px;border-top:1px solid var(--bor)}
+.stage-mini-row{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+.stage-mini-row b{color:var(--txt);font-weight:600}
+.stage-seg{display:flex;gap:4px;margin-top:7px}
+.stage-seg i{flex:1;height:5px;border-radius:3px;background:var(--sur2)}
+.stage-seg i.on{background:var(--grn)}
+.stage-bar{height:5px;border-radius:3px;background:var(--sur2);margin-top:7px;overflow:hidden}
+.stage-bar i{display:block;height:100%;background:var(--grn);border-radius:3px}
 .tc-title{font-size:14px;font-weight:600;text-align:center;color:var(--txt);margin-bottom:8px}
 .target-line{font-size:12px;text-align:center;color:var(--mut);margin-bottom:14px;line-height:1.5}
 .target-line b{color:var(--grn)}
@@ -717,12 +746,13 @@ input[type=range].pgslider::-moz-range-thumb{
   <!-- BUGÜN -->
   <div class="pane on" id="tab-me">
 
-    <!-- Bugün -->
+    <!-- Bugün: hafta şeridi + hedef + tek ana düğme + aşama ilerlemesi -->
     <div class="tc">
-      <div class="tc-title" id="tc-title">Bugün kaç sayfa okudun?</div>
-      <div class="target-line" id="target-line"></div>
-      <div class="slider-wrap" id="slider-wrap">
-        <div class="slider-top">
+      <div class="week-strip" id="week-strip"></div>
+      <div id="today-entry">
+        <div class="tg-lbl" id="tg-lbl">Bugünkü hedefin</div>
+        <div class="tg-big" id="tg-big"></div>
+        <div class="slider-top tg-stepper" id="today-stepper" style="display:none">
           <button class="step-btn" onclick="stepPage(-1)" aria-label="Azalt">−</button>
           <div class="num-center">
             <input type="number" class="page-input" id="page-input" inputmode="numeric" min="0" max="604" placeholder="0" oninput="onPageInput(this.value)">
@@ -730,20 +760,19 @@ input[type=range].pgslider::-moz-range-thumb{
           </div>
           <button class="step-btn" onclick="stepPage(1)" aria-label="Artır">+</button>
         </div>
-        <div class="quick-btns" id="quick-btns">
-          <button onclick="quickSet(1)">1</button>
-          <button onclick="quickSet(3)">3</button>
-          <button onclick="quickSet(5)">5</button>
-          <button onclick="quickSet(10)">10</button>
-          <button onclick="quickSet(20)">20</button>
-        </div>
-        <div class="alt-row" id="alt-row">
-          <button class="no-read-btn" id="no-read-btn" onclick="selectNoRead()">✕ &nbsp;Bugün okumadım</button>
-          <button class="no-read-btn excuse-btn" id="excuse-btn" onclick="openExcuse(todayStr(),'today')">☾ &nbsp;Mazeretim var</button>
+        <button class="save-btn" id="save-btn" disabled onclick="logToday()">Okudum</button>
+        <div class="tg-links">
+          <button id="other-btn" onclick="toggleOtherPages()">Başka sayı gir</button>
+          <button id="no-read-btn" onclick="selectNoRead()">Okumadım</button>
+          <button class="blu" id="excuse-btn" onclick="openExcuse(todayStr(),'today')">☾ Mazeretim var</button>
         </div>
       </div>
-      <button class="save-btn" id="save-btn" disabled onclick="logToday()">Okudum</button>
-      <button class="edit-btn" id="edit-today-btn" onclick="editToday()" style="display:none">Bugünü düzenle</button>
+      <div id="today-done" style="display:none">
+        <div class="tg-done" id="tg-done"></div>
+        <div class="tg-next" id="tg-next"></div>
+        <button class="edit-btn" id="edit-today-btn" onclick="editToday()">Bugünü düzenle</button>
+      </div>
+      <div class="stage-mini" id="stage-mini"></div>
       <div class="msg msg-ok" id="msg-ok"></div>
       <div class="msg msg-warn" id="msg-warn"></div>
     </div>
@@ -2221,8 +2250,21 @@ function getStage(val){
 }
 
 function selectNoRead(){
-  document.getElementById('page-input').value=0;
+  const input=document.getElementById('page-input');
+  document.getElementById('today-stepper').style.display='none';
+  if(sel===0){ input.value=curLevels()[S.levelIndex].pages; onPageInput(input.value); return; } // ikinci dokunuş geri alır
+  input.value=0;
   onPageInput(0);
+}
+
+/* "Başka sayı gir": hedeften farklı sayfa sayısı için artı/eksi alanını açar/kapatır */
+function toggleOtherPages(){
+  const st=document.getElementById('today-stepper'), input=document.getElementById('page-input');
+  const open=st.style.display==='none';
+  st.style.display=open?'':'none';
+  if(open && !(sel>0)){ input.value=curLevels()[S.levelIndex].pages; }
+  if(!open){ input.value=curLevels()[S.levelIndex].pages; }
+  onPageInput(input.value);
 }
 
 function quickSet(val){
@@ -2257,6 +2299,7 @@ function onPageInput(raw){
     document.getElementById('no-read-btn').classList.remove('sel');
     document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
     document.getElementById('save-btn').disabled=true;
+    updateSaveLabel();
     return;
   }
 
@@ -2268,6 +2311,7 @@ function onPageInput(raw){
     input.style.color='var(--red)';
     document.querySelectorAll('#quick-btns button').forEach(b=>{ b.classList.remove('active'); b.style.cssText=''; });
     document.getElementById('save-btn').disabled=false;
+    updateSaveLabel();
     return;
   }
 
@@ -2279,6 +2323,48 @@ function onPageInput(raw){
 
   updateQuickBtns(val);
   document.getElementById('save-btn').disabled=false;
+  updateSaveLabel();
+}
+
+/* Ana düğme metni seçili sayıya göre: "3 sayfa okudum" / "Okumadım olarak kaydet" */
+function updateSaveLabel(){
+  const btn=document.getElementById('save-btn');
+  if(!S || btn.classList.contains('done')) return;
+  btn.classList.toggle('zero', sel===0);
+  btn.textContent = sel===null ? 'Okudum' : sel===0 ? 'Okumadım olarak kaydet' : (sel+' sayfa okudum'+(editingToday?' (güncelle)':''));
+}
+
+/* Son 7 gün: okudu ✓, mazeret ☾, hedefin altında (sayı), okumadı ✕, bugün tarih */
+function renderWeekStrip(){
+  const box=document.getElementById('week-strip'); if(!box) return;
+  const DOW=['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+  const map={}; S.history.forEach(h=>map[h.date]=h);
+  const first=S.history.length?[...S.history].map(h=>h.date).sort()[0]:todayStr();
+  let html='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=localDS(d), e=map[ds];
+    let cls='', txt='';
+    if(e && e.excused){ cls='ex'; txt='☾'; }
+    else if(e && e.success){ cls='ok'; txt='✓'; }
+    else if(e && e.pages>0){ cls='part'; txt=e.pages; }
+    else if(e){ cls='miss'; txt='✕'; }
+    else if(i===0){ cls='now'; txt=d.getDate(); }
+    else if(ds>=first){ cls='miss'; txt='✕'; }
+    else { txt=d.getDate(); }
+    html+='<div class="wd">'+(i===0?'Bugün':DOW[d.getDay()])+'<span class="'+cls+'">'+txt+'</span></div>';
+  }
+  box.innerHTML=html;
+}
+
+/* Bulunulan aşama ve o aşamadaki ilerleme */
+function renderStageMini(){
+  const box=document.getElementById('stage-mini'); if(!box) return;
+  const lvl=curLevels()[S.levelIndex];
+  const bar = lvl.days<=10
+    ? '<div class="stage-seg">'+Array.from({length:lvl.days},(_,i)=>'<i class="'+(i<S.streak?'on':'')+'"></i>').join('')+'</div>'
+    : '<div class="stage-bar"><i style="width:'+Math.round(S.streak/lvl.days*100)+'%"></i></div>';
+  box.innerHTML='<div class="stage-mini-row"><b>'+escHtml(lvl.name)+' aşaması</b><span>'+S.streak+' / '+lvl.days+' gün</span></div>'+bar;
 }
 
 let editingToday=false;
@@ -2295,6 +2381,7 @@ function editToday(){
   } else if(entry){
     input.value=entry.pages;
     onPageInput(entry.pages);
+    if(entry.pages!==curLevels()[S.levelIndex].pages) document.getElementById('today-stepper').style.display='';
   } else {
     onPageInput(input.value);
   }
@@ -2305,6 +2392,7 @@ function logToday(){
   applyReading(todayStr(), sel);
   sel=null; editingToday=false;
   document.getElementById('no-read-btn').classList.remove('sel');
+  document.getElementById('today-stepper').style.display='none';
   saveLocal(); syncToFb(); renderMe();
 }
 
@@ -2577,36 +2665,30 @@ function renderMe(){
   scheduleReminder(); // bugünkü durum değişmiş olabilir (kaydedildi/düzenlendi) — hatırlatmayı buna göre ayarla
 
   const btn=document.getElementById('save-btn');
-  const tc=document.getElementById('tc-title');
-  const sw=document.getElementById('slider-wrap');
-  const tl=document.getElementById('target-line');
-  const editBtn=document.getElementById('edit-today-btn');
-
   const exc=todayExcused();
+  const entry=S.history.find(h=>h.date===todayStr());
   if((S.todayLogged||exc) && !editingToday){
-    btn.textContent=exc?'Bugün mazeretli ☾':'Bugün kaydedildi ✓';btn.disabled=true;btn.className='save-btn done';
-    tc.textContent=exc?'Bugün mazeretli ☾':'Bugün tamamlandı ✓';
+    document.getElementById('today-entry').style.display='none';
+    document.getElementById('today-done').style.display='';
+    btn.className='save-btn done';
+    const done=document.getElementById('tg-done');
+    if(exc){ done.className='tg-done ex'; done.textContent='Bugün mazeretli ☾'; }
+    else if(entry && entry.pages>0){ done.className='tg-done'; done.textContent='Bugün '+entry.pages+' sayfa okudun ✓'; }
+    else { done.className='tg-done zero'; done.textContent='Bugün okumadın'; }
     // Yarınki hedef = güncel seviyenin hedefi (recalc sonrası)
-    tl.innerHTML='Yarınki hedef: <b>'+lvl.pages+' sayfa</b> ('+escHtml(lvl.name)+')';
-    sw.style.opacity='.4';
-    sw.style.pointerEvents='none';
-    document.getElementById('alt-row').style.display='none';
-    editBtn.style.display='';
+    document.getElementById('tg-next').innerHTML='Yarınki hedef: <b>'+lvl.pages+' sayfa</b>';
   } else {
-    btn.textContent=editingToday?'Güncelle':'Okudum';
-    btn.disabled=(sel===null);btn.className='save-btn';
-    tc.textContent=editingToday?'Bugünü düzenle':'Bugün kaç sayfa okudun?';
-    // Bugünkü hedef + altında kalırsa ne olur
-    let uyari='';
-    if(S.levelIndex>0){
-      const onceki=escHtml(curLevels()[S.levelIndex-1].name);
-      uyari=' · <span class="warn-part">Altında kalırsan '+onceki+' aşamasına dönersin</span>';
-    }
-    tl.innerHTML='Bugünkü hedef: <b>'+lvl.pages+' sayfa</b>'+uyari;
-    sw.style.opacity='1';sw.style.pointerEvents='';
-    document.getElementById('alt-row').style.display='';
-    editBtn.style.display='none';
+    document.getElementById('today-entry').style.display='';
+    document.getElementById('today-done').style.display='none';
+    btn.className='save-btn';
+    document.getElementById('tg-lbl').textContent=editingToday?'Bugünü düzenle · hedefin':'Bugünkü hedefin';
+    document.getElementById('tg-big').textContent=lvl.pages+' sayfa';
+    if(sel===null){ const input=document.getElementById('page-input'); input.value=lvl.pages; onPageInput(lvl.pages); }
+    btn.disabled=(sel===null);
+    updateSaveLabel();
   }
+  renderWeekStrip();
+  renderStageMini();
 
   renderLoc();
   renderChain();
